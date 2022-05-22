@@ -1,4 +1,5 @@
 package com.jpmarket.domain.posts;
+import com.jpmarket.domain.BaseTimeEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,7 +13,7 @@ import javax.persistence.Id;
 @Getter
 @NoArgsConstructor
 @Entity     // Entity class에서는 Setter를 만들지 않는다!!!!! 값 변경이 필요하면 메소드를 추가
-public class Posts {
+public class Posts extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
