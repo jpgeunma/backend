@@ -1,13 +1,14 @@
 package com.jpmarket.config.auth;
 
+import com.jpmarket.domain.user.Role;
 import lombok.RequiredArgsConstructor;
-import org.h2.engine.Role;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
 @RequiredArgsConstructor
 @EnableWebSecurity
-public class SecurityConfig {
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final CustomOAuth2UserService customOAuth2UserService;
 
@@ -16,7 +17,7 @@ public class SecurityConfig {
         http.csrf().disable().headers().frameOptions().disable().and()
                 .authorizeRequests()
                 .antMatchers("/", "/css/**", "/images/**","/js/**","/h2-console/**").permitAll()
-                .antMatchers("/api/v1/**").hasRole(Role.USER.name())
+                .antMatchers("/api/v1/**").hasRole(Role.GUEST.name())
                 .anyRequest().authenticated()
                 .and()
                     .logout()
