@@ -17,7 +17,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable().headers().frameOptions().disable().and()
                 .authorizeRequests()
                 .antMatchers("/", "/css/**", "/images/**","/js/**","/h2-console/**").permitAll()
-                .antMatchers("/api/v1/**").hasRole(Role.GUEST.name())
+                .antMatchers("/api/v1/**").hasRole(Role.USER.name())    // TODO Role.USER  와 Role.ADMIN 구별
                 .anyRequest().authenticated()
                 .and()
                     .logout()
