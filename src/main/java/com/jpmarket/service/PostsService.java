@@ -2,11 +2,11 @@ package com.jpmarket.service;
 
 import com.jpmarket.domain.posts.Posts;
 import com.jpmarket.domain.posts.PostsRepository;
-import com.jpmarket.web.dto.PostsListResponseDto;
-import com.jpmarket.web.dto.PostsResponseDto;
-import com.jpmarket.web.dto.PostsSaveRequestDto;
+import com.jpmarket.web.postsDto.PostsListResponseDto;
+import com.jpmarket.web.postsDto.PostsResponseDto;
+import com.jpmarket.web.postsDto.PostsSaveRequestDto;
 
-import com.jpmarket.web.dto.PostsUpdateRequestDto;
+import com.jpmarket.web.postsDto.PostsUpdateRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

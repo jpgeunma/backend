@@ -5,6 +5,7 @@ import com.jpmarket.domain.BaseTimeEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,6 +14,7 @@ import javax.persistence.Id;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GenerationType;
+import java.math.BigDecimal;
 
 
 @Getter
@@ -32,6 +34,9 @@ public class User extends BaseTimeEntity {
     @Column
     private String picture;
 
+    @Column(nullable = false, columnDefinition = "integer default 0")
+    private Long heartTemp;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
@@ -47,6 +52,12 @@ public class User extends BaseTimeEntity {
     public User update(String name, String picture) {
         this.name = name;
         this.picture = picture;
+
+        return this;
+    }
+
+    public User heartTempUpdate(Long score) {
+        this.heartTemp += (score - this.heartTemp) / 2;
 
         return this;
     }

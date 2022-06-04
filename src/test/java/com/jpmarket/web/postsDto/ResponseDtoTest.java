@@ -1,4 +1,4 @@
-package com.jpmarket.web.dto;
+package com.jpmarket.web.postsDto;
 import org.junit.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 

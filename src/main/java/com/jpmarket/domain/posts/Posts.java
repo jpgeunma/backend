@@ -25,13 +25,34 @@ public class Posts extends BaseTimeEntity {
     @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
 
+    @Column(nullable = false)
     private String author;
 
+    @Column(nullable = false, columnDefinition = "integer default 0")
+    private Long status;
+
+    @Column(nullable = false)
+    private Long location;
+
+    @Column
+    private Long category;
+
+    @Column
+    private Long buyerId;
+
+//    @Column
+//    private Location
+//    //TODO 구글맵 장소 추가
+
     @Builder
-    public Posts(String title, String content, String author) {
+    public Posts(String title, String content, String author,
+                 Long location, Long category, Long buyerId) {
         this.title = title;
         this.content = content;
         this.author = author;
+        this.location = location;
+        this.category = category;
+        this.buyerId = buyerId;
     }
 
     public void update(String title, String content) {

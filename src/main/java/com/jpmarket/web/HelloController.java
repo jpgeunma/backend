@@ -1,5 +1,5 @@
 package com.jpmarket.web;
-import com.jpmarket.web.dto.ResponseDto;
+import com.jpmarket.web.postsDto.ResponseDto;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;

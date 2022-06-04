@@ -1,4 +1,4 @@
-package com.jpmarket.web.dto;
+package com.jpmarket.web.postsDto;
 
 import lombok.Builder;
 import lombok.Getter;
