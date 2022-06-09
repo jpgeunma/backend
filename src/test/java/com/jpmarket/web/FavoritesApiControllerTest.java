@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jpmarket.domain.favorites.Favorites;
 import com.jpmarket.domain.favorites.FavoritesRepository;
 import com.jpmarket.domain.posts.PostsRepository;
+import com.jpmarket.domain.user.Role;
+import com.jpmarket.domain.user.User;
 import com.jpmarket.domain.user.UserRepository;
 import com.jpmarket.web.favoritesDto.FavoritesSaveRequestDto;
 import com.jpmarket.web.postsDto.PostsSaveRequestDto;
@@ -63,6 +65,7 @@ public class FavoritesApiControllerTest {
 
     @After
     public void tearDown() throws Exception {
+        userRepository.deleteAll();
         favoritesRepository.deleteAll();
         postsRepository.deleteAll();
     }
@@ -70,9 +73,21 @@ public class FavoritesApiControllerTest {
     @Test
     @WithMockUser(roles = "USER")
     public void Favorites_added() throws Exception {
+
         // given
+        String postUrl = "http://localhost:" + port + "/api/v1/posts";
+        String favoritesUrl = "http://localhost:" + port + "/api/v1/favorites";
+
+        User user = User.builder()
+                .email("test@test.com")
+                .name("test")
+                .role(Role.USER)
+                .build();
+
+        Long userId = user.getId();
 
 
+        userRepository.save(user);
 
         PostsSaveRequestDto postsSaveRequestDto = PostsSaveRequestDto.builder()
                 .title("title")
@@ -81,20 +96,29 @@ public class FavoritesApiControllerTest {
                 .location(1L)
                 .build();
 
-        String url = "http://localhost:" + port + "api/v1/posts";
-
-        mvc.perform(post(url)
+        // when
+        mvc.perform(post(postUrl)
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(new ObjectMapper().writeValueAsString(postsSaveRequestDto)))
             .andExpect(status().isOk());
 
+        Long postId = postsRepository.findAll().get(0).getId();
+
         FavoritesSaveRequestDto favoritesSaveRequestDto = FavoritesSaveRequestDto.builder()
-                .postId(1L) // first posted
-                .userId(1L)
+                .postId(postId) // first posted
+                .userId(userId)
                 .build();
 
-        List<Favorites> all = favoritesRepository.findAllByUserId(1L);
-        assertThat(all.get(0).getPostId()).isEqualTo(1);
-        assertThat(all.get(0).getUserId()).isEqualTo(1);
+        mvc.perform(post(favoritesUrl)
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(new ObjectMapper().writeValueAsString(favoritesSaveRequestDto)))
+            .andExpect(status().isOk());
+
+        // then
+        List<User> allUser = userRepository.findAll();
+        List<Favorites> allFavorites = favoritesRepository.findAll();
+
+        assertThat(allFavorites.get(0).getUserId()).isEqualTo(userId);
+        assertThat(allFavorites.get(0).getPostId()).isEqualTo(postId);
     }
 }

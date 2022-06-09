@@ -26,6 +26,9 @@ public class FavoritesService {
 
     @Transactional(readOnly = true)
     public List<FavoritesListResponseDto> findAllByUserId(Long userId) {
+        favoritesRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 유저는 없습니다"));
+
         return favoritesRepository.findAllByUserId(userId).stream()
                 .map(FavoritesListResponseDto::new)
                 .collect(Collectors.toList());
