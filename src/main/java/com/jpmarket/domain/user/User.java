@@ -34,7 +34,7 @@ public class User extends BaseTimeEntity {
     @Column
     private String picture;
 
-    @Column(nullable = false, columnDefinition = "integer default 0")
+    @Column(columnDefinition = "integer default 0")
     private Long heartTemp;
 
     @Enumerated(EnumType.STRING)

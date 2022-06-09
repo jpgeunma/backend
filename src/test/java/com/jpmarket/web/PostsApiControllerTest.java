@@ -67,10 +67,12 @@ public class PostsApiControllerTest {
         //given
         String title = "title";
         String content = "content";
+        Long location = 1L;
         PostsSaveRequestDto requestDto = PostsSaveRequestDto.builder()
                 .title(title)
                 .content(content)
                 .author("author")
+                .location(location)
                 .build();
 
         String url = "http://localhost:" + port + "/api/v1/posts";

@@ -11,11 +11,15 @@ public class PostsSaveRequestDto {
     private String content;
     private String author;
 
+    private Long location;
+
     @Builder
-    public PostsSaveRequestDto(String title, String content, String author) {
+    public PostsSaveRequestDto(String title, String content, String author,
+                               Long location) {
         this.title = title;
         this.content = content;
         this.author = author;
+        this.location = location;
     }
 
     public Posts toEntity() {
@@ -23,6 +27,7 @@ public class PostsSaveRequestDto {
                 .title(title)
                 .content(content)
                 .author(author)
+                .location(location)
                 .build();
     }
 

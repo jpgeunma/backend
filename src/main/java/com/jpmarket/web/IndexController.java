@@ -27,9 +27,7 @@ public class IndexController {
     @GetMapping("/favorites")
     public String favorites(Model model, @LoginUser SessionUser user)
     {
-        model.addAttribute("favorites",favoritesService.findAllByUserId(user.getId()));
-
+        favoritesService.findAllByUserId(user.getId());
         return "favorites";
     }
-
 }
