@@ -50,6 +50,10 @@ dependencies {
     implementation 'org.webjars.bower:axios:0.17.1'
     implementation 'com.google.code.gson:gson:2.8.0'
 
+    // 썸네일 제작 라이브러리
+    implementation group: 'net.coobird', name: 'thumbnailator', version: '0.4.11'
+
+
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
 
