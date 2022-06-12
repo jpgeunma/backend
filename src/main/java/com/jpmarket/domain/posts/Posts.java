@@ -31,7 +31,7 @@ public class Posts extends BaseTimeEntity {
     @Column(columnDefinition = "integer default 0")
     private Long status;
 
-    @Column(nullable = false)
+    @Column(nullable = true) // TODO 위치 정보 획득 방법 확인
     private Long location;
 
     @Column

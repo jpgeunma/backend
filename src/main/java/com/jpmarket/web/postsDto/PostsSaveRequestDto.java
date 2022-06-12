@@ -3,8 +3,10 @@ import com.jpmarket.domain.posts.Posts;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
+@Setter
 @NoArgsConstructor
 public class PostsSaveRequestDto {
     private String title;
@@ -19,7 +21,6 @@ public class PostsSaveRequestDto {
         this.title = title;
         this.content = content;
         this.author = author;
-        this.location = location;
     }
 
     public Posts toEntity() {
@@ -27,7 +28,6 @@ public class PostsSaveRequestDto {
                 .title(title)
                 .content(content)
                 .author(author)
-                .location(location)
                 .build();
     }
 

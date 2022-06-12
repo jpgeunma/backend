@@ -35,6 +35,7 @@ import java.util.List;
 
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -58,7 +59,7 @@ public class PicturesApiControllerTest {
     @Autowired
     private PicturesRepository picturesRepository;
 
-    @MockBean
+    @Autowired
     private PicturesService picturesService;
 
     @Autowired
@@ -89,7 +90,6 @@ public class PicturesApiControllerTest {
 
         String fileName = "testImage1";
 
-        String folderPath = "testImages";
 
         String url = "http://localhost:" + port + "/api/v1/pictures/upload";
 
@@ -100,20 +100,25 @@ public class PicturesApiControllerTest {
         ImageIO.write(image, "png", outputStream);
         byte [] pictureByte = outputStream.toByteArray();
 
-        MockMultipartFile multipartFile = new MockMultipartFile("file", "test.png", MediaType.MULTIPART_FORM_DATA_VALUE, pictureByte);
+        MockMultipartFile multipartFile = new MockMultipartFile("file", "test.png", MediaType.IMAGE_PNG_VALUE, pictureByte);
 
         PicturesUploadRequestDto requestDto = PicturesUploadRequestDto.builder()
                 .boardId(boardId)
                 .fileName(fileName)
-                .folderPath(folderPath)
                 .build();
 
-        mvc.perform(post(url)
-                        .param("requestDto", new ObjectMapper().writeValueAsString(requestDto))
-                        .param("uploadFile", multipartFile.toString()))
-                .andExpect(status().isOk());
+        byte [] test = new ObjectMapper().writeValueAsBytes(requestDto);
+        MockMultipartFile multipartRequestDto = new MockMultipartFile("requestDto", "requestDto", MediaType.APPLICATION_JSON_VALUE, test);
+
+        mvc.perform(multipart("/api/v1/pictures/upload")
+                .file(multipartFile)
+                .file(multipartRequestDto))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andReturn();
 
         List<Pictures> all = picturesRepository.findAll();
+        assertThat(all.size()).isEqualTo(1);
         assertThat(all.get(0).getBoardId()).isEqualTo(boardId);
         assertThat(all.get(0).getOriginalFileName()).isEqualTo(fileName);
 

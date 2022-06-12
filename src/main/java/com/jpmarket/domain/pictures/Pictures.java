@@ -4,13 +4,14 @@ import com.jpmarket.domain.BaseTimeEntity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
-@Entity
 @Builder
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Entity
 public class Pictures extends BaseTimeEntity {
 
     @Id
@@ -26,14 +27,18 @@ public class Pictures extends BaseTimeEntity {
     @Column(nullable = false)
     private String storedFolderPath;
 
-    @Column
-    private String type;
 
     @Builder
     public Pictures (Long boardId, String originalFileName, String storedFolderPath) {
         this.boardId = boardId;
         this.originalFileName = originalFileName;
         this.storedFolderPath = storedFolderPath;
+    }
+
+    public void updateCreatedTime(LocalDateTime createdTime)
+    {
+        //this.setCreatedDate(createdTime);
+        return;
     }
 
 }

@@ -14,6 +14,7 @@ public class PicturesService {
 
     @Transactional
     public Long upload(PicturesUploadRequestDto requestDto) {
+        System.out.println("Test");
         return picturesRepository.save(requestDto.toEntity()).getId();
     }
 }

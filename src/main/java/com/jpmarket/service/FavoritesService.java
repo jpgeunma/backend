@@ -34,4 +34,13 @@ public class FavoritesService {
                 .collect(Collectors.toList());
     }
 
+    //FIXME not added to Controller Yet
+    @Transactional(readOnly = true)
+    public Long findAllLengthByUserId(Long userId) {
+        favoritesRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 유저는 없습니다"));
+
+        return favoritesRepository.findAllLengthByUserId(userId);
+    }
+
 }

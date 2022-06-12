@@ -1,5 +1,6 @@
 package com.jpmarket.web.picturesDto;
 
+import com.jpmarket.domain.pictures.Pictures;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
