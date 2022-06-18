@@ -1,17 +1,23 @@
 package com.jpmarket.config.auth;
 
+import com.jpmarket.config.jwt.AuthTokenFilter;
+import com.jpmarket.config.jwt.JwtUtils;
 import com.jpmarket.domain.user.Role;
+import com.jpmarket.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @RequiredArgsConstructor
 @EnableWebSecurity
+@Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final CustomOAuth2UserService customOAuth2UserService;
-
+    private final SuccessHandler successHandler;
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable().headers().frameOptions().disable().and()
@@ -23,10 +29,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .logout()
                         .logoutSuccessUrl("/")
                 .and()
+                .addFilterBefore(new AuthTokenFilter(),
+                        UsernamePasswordAuthenticationFilter.class)
                     .oauth2Login()
-                        .successHandler()
+                        .successHandler(successHandler)
                             .userInfoEndpoint()
                                 .userService(customOAuth2UserService);
+
+        http.addFilterBefore(new AuthTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+
     }
 
 }
