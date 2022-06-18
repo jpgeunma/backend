@@ -40,6 +40,7 @@ dependencies {
     implementation  'org.springframework.boot:spring-boot-starter-websocket'
     implementation 'org.webjars:sockjs-client:1.1.2'
     implementation 'org.webjars:stomp-websocket:2.3.3-1'
+    compile('io.projectreactor:reactor-core')
 
     //view
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
@@ -53,6 +54,8 @@ dependencies {
     // 썸네일 제작 라이브러리
     implementation group: 'net.coobird', name: 'thumbnailator', version: '0.4.11'
 
+    // auth
+    implementation group: 'com.auth0', name: 'java-jwt', version: '3.10.2'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 

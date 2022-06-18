@@ -5,8 +5,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.web.socket.WebSocketSession;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -23,6 +27,8 @@ public class ChatRoom extends BaseTimeEntity {
     @Column(nullable = false)
     private Long buyerId;
 
+    @Column
+    private String roomName;
 
     @Builder
     public ChatRoom(Long sellerId, Long buyerId)

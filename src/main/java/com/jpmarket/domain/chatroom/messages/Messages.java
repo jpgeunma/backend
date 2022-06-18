@@ -1,22 +1,43 @@
 package com.jpmarket.domain.chatroom.messages;
 
-import lombok.*;
+import com.jpmarket.domain.BaseTimeEntity;
+import lombok.Builder;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import javax.persistence.*;
+
 
 @Getter
-@Setter
 @NoArgsConstructor
-public class Messages {
+@Entity
+public class Messages extends BaseTimeEntity {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column
     private Long roomId;
 
+    @Column
     private String sender;
 
+    @Column
+    private String receiver;
+
+    @Column
     private String message;
 
+    private MessagesType type;
+
     @Builder
-    public Messages(Long roomId, String sender, String message) {
+    Messages (Long roomId, String sender, String receiver, String message)
+    {
         this.roomId = roomId;
         this.sender = sender;
+        this.receiver = receiver;
         this.message = message;
     }
 }
