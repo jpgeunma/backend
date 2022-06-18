@@ -49,8 +49,11 @@ public class SuccessHandler extends SimpleUrlAuthenticationSuccessHandler  {
 
         System.out.println("token :" + token);
 
-        String targetUrl = UriComponentsBuilder.fromUriString("/")
-                .queryParam("token", "token")
+        String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/login/redirect")
+                .queryParam("token", token)
+                .queryParam("name", user.getName())
+                .queryParam("email",user.getEmail())
+                .queryParam("heart", user.getHeartTemp())
                 .build().toUriString();
 
         getRedirectStrategy().sendRedirect(request, response, targetUrl);

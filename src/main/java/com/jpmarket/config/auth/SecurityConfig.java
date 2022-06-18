@@ -1,5 +1,6 @@
 package com.jpmarket.config.auth;
 
+import com.jpmarket.config.auth.dto.FailureHandler;
 import com.jpmarket.config.jwt.AuthTokenFilter;
 import com.jpmarket.config.jwt.JwtUtils;
 import com.jpmarket.domain.user.Role;
@@ -18,6 +19,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final CustomOAuth2UserService customOAuth2UserService;
     private final SuccessHandler successHandler;
+    private final FailureHandler failureHandler;
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable().headers().frameOptions().disable().and()
@@ -27,14 +29,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated()
                 .and()
                     .logout()
-                        .logoutSuccessUrl("/")
+                        .logoutSuccessUrl("http://localhost:3000/")
                 .and()
                 .addFilterBefore(new AuthTokenFilter(),
                         UsernamePasswordAuthenticationFilter.class)
                     .oauth2Login()
-                        .successHandler(successHandler)
-                            .userInfoEndpoint()
-                                .userService(customOAuth2UserService);
+                        .failureHandler(failureHandler)
+                            .successHandler(successHandler)
+                                .userInfoEndpoint()
+                                    .userService(customOAuth2UserService);
 
         http.addFilterBefore(new AuthTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 
