@@ -35,6 +35,7 @@ dependencies {
     compile('org.springframework.session:spring-session-jdbc')
     compile('org.springframework.boot:spring-boot-starter-oauth2-client')
     testCompile("org.springframework.security:spring-security-test")
+    compile ('org.springframework.boot:spring-boot-starter-security')
 
     //websocket
     implementation  'org.springframework.boot:spring-boot-starter-websocket'

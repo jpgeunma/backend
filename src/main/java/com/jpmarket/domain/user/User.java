@@ -32,6 +32,9 @@ public class User extends BaseTimeEntity {
     private String email;
 
     @Column
+    private String password;
+
+    @Column
     private String picture;
 
     @Column(columnDefinition = "integer default 0")

@@ -2,6 +2,7 @@ package com.jpmarket.config.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.jpmarket.config.auth.dto.CustomUserDetails;
 import com.jpmarket.domain.user.User;
 import com.jpmarket.domain.user.UserRepository;
 import io.jsonwebtoken.*;
@@ -9,16 +10,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
+import java.util.stream.Collectors;
 
 @Component
 public class JwtUtils {
     private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
+    private static final String AUTHORITIES_KEY = "authorities";
 
     @Autowired
     UserRepository userRepository;
@@ -37,9 +45,54 @@ public class JwtUtils {
                 .withClaim("name", user.getName())
                 .sign(Algorithm.HMAC512(jwtScret));
     }
+        public String generateJwtToken(Authentication authentication) {
+            return generateJwtToken(authentication, false);
+        }
 
+        public String generateJwtToken(Authentication authentication, boolean rememberMe) {
+
+        String authorities = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(","));
+
+        Long now = (new Date()).getTime();
+        Date validity;
+        if (rememberMe) {
+            validity = new Date(now + 10 * jwtExpirationMs);
+        } else {
+            validity = new Date(now + jwtExpirationMs);
+        }
+
+        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+
+        return JWT.create()
+                .withSubject(Long.toString(customUserDetails.getId()))
+                .withSubject(customUserDetails.getEmail())
+                .withIssuedAt(new Date())
+                .withExpiresAt(validity)
+                .withClaim(AUTHORITIES_KEY, authorities)
+                .sign(Algorithm.HMAC512(jwtScret));
+
+    }
     public String getUserNameFromJwtToken(String token) {
         return  Jwts.parserBuilder().setSigningKey(jwtScret).build().parseClaimsJwt(token).getBody().getSubject();
+    }
+
+    public Authentication getAuthenticationFromJwtToken(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(jwtScret)
+                .build()
+                .parseClaimsJwt(token)
+                .getBody();
+
+        Collection<? extends GrantedAuthority> authorities =
+                Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
+                        .map(SimpleGrantedAuthority::new)
+                        .collect(Collectors.toList());
+
+        User principal = userRepository.findByEmail(authorities.toString()).orElse(null);
+
+        return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }
 
     public String getUserEmailFromJwtToken(String token) {
