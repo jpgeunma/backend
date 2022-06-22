@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
 
 @RequiredArgsConstructor
 @EnableWebSecurity
@@ -38,6 +39,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                             .successHandler(successHandler)
                                 .userInfoEndpoint()
                                     .userService(customOAuth2UserService);
+
+        //TODO 시큐리티 체크. 포스팅시 오류 떠서 적음. 무슨 뜻인지 모름
+        http.cors().configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues());
 
         http.addFilterBefore(new AuthTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 

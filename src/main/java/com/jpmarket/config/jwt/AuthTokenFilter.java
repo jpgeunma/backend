@@ -36,7 +36,7 @@ public class AuthTokenFilter extends GenericFilterBean {
             String jwt = parseJwt(request);
             if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
                 String userName = jwtUtils.getUserNameFromJwtToken(jwt);
-
+                System.out.println("User name from Jwt Token " + userName);
                 User user = userRepository.findByName(userName)
                         .orElseThrow(()->new io.jsonwebtoken.io.IOException("no such user name"));
 

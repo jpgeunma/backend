@@ -33,8 +33,6 @@ public class SuccessHandler extends SimpleUrlAuthenticationSuccessHandler  {
 
     private final UserRepository userRepository;
 
-    private final ObjectMapper objectMapper;
-
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request,
                                         HttpServletResponse response,
@@ -51,9 +49,8 @@ public class SuccessHandler extends SimpleUrlAuthenticationSuccessHandler  {
 
         String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/login/redirect")
                 .queryParam("token", token)
+                .queryParam("email", user.getEmail())
                 .queryParam("name", user.getName())
-                .queryParam("email",user.getEmail())
-                .queryParam("heart", user.getHeartTemp())
                 .build().toUriString();
 
         getRedirectStrategy().sendRedirect(request, response, targetUrl);

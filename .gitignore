@@ -1,0 +1,3 @@
+application-oauth.properties
+application-jwt.properties
+/src/main/resources/testImages

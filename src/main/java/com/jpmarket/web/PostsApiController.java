@@ -1,5 +1,6 @@
 package com.jpmarket.web;
 import com.jpmarket.service.PostsService;
+import com.jpmarket.web.postsDto.PostsListResponseDto;
 import com.jpmarket.web.postsDto.PostsResponseDto;
 import com.jpmarket.web.postsDto.PostsSaveRequestDto;
 import com.jpmarket.web.postsDto.PostsUpdateRequestDto;
@@ -7,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -28,6 +30,10 @@ public class PostsApiController {
     public Long delete(@PathVariable Long id) {
         postsService.delete(id);
         return id;
+    }
+    @GetMapping("/hot")
+    public List<PostsListResponseDto> findTenPostsByView () {
+        return postsService.findTenPostsByViewed();
     }
 
     @GetMapping("/api/v1/posts/{id}")

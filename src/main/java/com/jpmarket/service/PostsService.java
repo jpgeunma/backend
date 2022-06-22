@@ -41,6 +41,7 @@ public class PostsService {
         postsRepository.delete(posts);
     }
 
+    @Transactional(readOnly = true)
     public PostsResponseDto findById (Long id) {
         Posts entity = postsRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 업습니다. id=" + id));
@@ -48,6 +49,12 @@ public class PostsService {
                 return new PostsResponseDto(entity);
     }
 
+    @Transactional(readOnly = true)
+    public List<PostsListResponseDto> findTenPostsByViewed() {
+        return postsRepository.findPostsByViewed().subList(0, 9).stream()
+                .map(PostsListResponseDto::new)
+                .collect(Collectors.toList());
+    }
     @Transactional(readOnly = true)
     public List<PostsListResponseDto> findallDesc() {
         return postsRepository.findallDesc().stream()

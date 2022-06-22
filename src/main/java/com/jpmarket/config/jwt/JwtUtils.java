@@ -34,15 +34,19 @@ public class JwtUtils {
         return JWT.create()
                 .withSubject(user.getEmail())
                 .withExpiresAt(new Date(System.currentTimeMillis()+ jwtExpirationMs))
-                .withClaim("id", user.getId())
                 .withClaim("name", user.getName())
                 .sign(Algorithm.HMAC512(jwtScret));
     }
 
     public String getUserNameFromJwtToken(String token) {
-        return Jwts.parser().setSigningKey(jwtScret).parseClaimsJwt(token).getBody().getSubject();
+        return  Jwts.parserBuilder().setSigningKey(jwtScret).build().parseClaimsJwt(token).getBody().getSubject();
+    }
+
+    public String getUserEmailFromJwtToken(String token) {
+        return  Jwts.parserBuilder().setSigningKey(jwtScret).build().parseClaimsJwt(token).getBody().getSubject();
     }
     public boolean validateJwtToken(String authToken) {
+        System.out.println("Trying validate token " + authToken);
         try{
             Jwts.parserBuilder().setSigningKey(jwtScret).build().parseClaimsJwt(authToken);
             return true;
