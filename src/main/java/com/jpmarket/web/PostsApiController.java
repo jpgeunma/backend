@@ -31,7 +31,7 @@ public class PostsApiController {
         postsService.delete(id);
         return id;
     }
-    @GetMapping("/posts")
+    @GetMapping("/api/posts")
     public List<PostsListResponseDto> findTenPostsByView () {
         return postsService.findTenPostsByViewed();
     }

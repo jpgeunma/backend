@@ -32,7 +32,8 @@ public class AuthController {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final AuthenticationManager authenticationManager
+    @Autowired(required = true)
+    private AuthenticationManager authenticationManager;
     @Autowired
     private JwtUtils jwtUtil;
 
@@ -51,7 +52,7 @@ public class AuthController {
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword());
 
         try {
-            Authentication authentication = AuthenticationManager::authenticate(authenticationToken);
+            Authentication authentication = authenticationManager.authenticate(authenticationToken);
             SecurityContextHolder.getContext().setAuthentication(authentication);
             String jwt = "Bearer " + jwtUtil.generateJwtToken(authentication, rememberMe);
             response.addHeader(AUTHORIZATION_HEADER, jwt);

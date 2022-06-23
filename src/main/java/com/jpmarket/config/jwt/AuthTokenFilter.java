@@ -3,11 +3,15 @@ package com.jpmarket.config.jwt;
 import com.jpmarket.domain.user.User;
 import com.jpmarket.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -17,30 +21,36 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
 
 @RequiredArgsConstructor
-public class AuthTokenFilter extends GenericFilterBean {
+public class AuthTokenFilter extends OncePerRequestFilter {
     @Autowired
     private JwtUtils jwtUtils;
 
     @Autowired
     private UserRepository userRepository;
 
+    private static final Logger logger = LoggerFactory.getLogger(AuthTokenFilter.class);
+
     @Override
-    public void doFilter(ServletRequest request,
-                         ServletResponse response,
-                         FilterChain chain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+
+        String jwt = parseJwt(request);
         try{
-            String jwt = parseJwt(request);
-            if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
+            System.out.println("Filter jwt " + jwt);
+            System.out.println("validation: " + jwtUtils.validateJwtToken(jwt));
+
+            if ( jwt.equals("") && jwtUtils.validateJwtToken(jwt)) {
                 String userName = jwtUtils.getUserNameFromJwtToken(jwt);
                 System.out.println("User name from Jwt Token " + userName);
-                User user = userRepository.findByName(userName)
+                UserDetails user = (UserDetails) userRepository.findByName(userName)
                         .orElseThrow(()->new io.jsonwebtoken.io.IOException("no such user name"));
 
-                Authentication auth = getAuthentication(user);
+                UsernamePasswordAuthenticationToken auth = (UsernamePasswordAuthenticationToken) getAuthentication(user);
+                auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(auth);
             }
 
@@ -48,8 +58,7 @@ public class AuthTokenFilter extends GenericFilterBean {
             System.out.println("Cannot set user authentication: " + e.getMessage());
         }
 
-        chain.doFilter(request, response);
-
+        filterChain.doFilter(request, response);
     }
 
     private String parseJwt(ServletRequest request) {
@@ -61,8 +70,7 @@ public class AuthTokenFilter extends GenericFilterBean {
         return null;
     }
 
-    public Authentication getAuthentication(User user) {
-        return new UsernamePasswordAuthenticationToken(user, "",
-                Arrays.asList(new SimpleGrantedAuthority("USER")));
+    public Authentication getAuthentication(UserDetails user) {
+        return new UsernamePasswordAuthenticationToken(user, "", user.getAuthorities());
     }
 }

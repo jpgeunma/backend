@@ -51,7 +51,7 @@ public class PostsService {
 
     @Transactional(readOnly = true)
     public List<PostsListResponseDto> findTenPostsByViewed() {
-        return postsRepository.findPostsByViewed().subList(0, 9).stream()
+        return postsRepository.findPostsByViewed().subList(0, 2).stream()
                 .map(PostsListResponseDto::new)
                 .collect(Collectors.toList());
     }
