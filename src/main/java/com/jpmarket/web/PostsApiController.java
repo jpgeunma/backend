@@ -5,6 +5,8 @@ import com.jpmarket.web.postsDto.PostsResponseDto;
 import com.jpmarket.web.postsDto.PostsSaveRequestDto;
 import com.jpmarket.web.postsDto.PostsUpdateRequestDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -31,9 +33,9 @@ public class PostsApiController {
         postsService.delete(id);
         return id;
     }
-    @GetMapping("/api/posts")
-    public List<PostsListResponseDto> findTenPostsByView () {
-        return postsService.findTenPostsByViewed();
+    @GetMapping("/api/v1/posts")
+    public ResponseEntity<List<PostsListResponseDto>> findTenPostsByView () {
+        return new ResponseEntity<>(postsService.findTenPostsByViewed(), HttpStatus.OK);
     }
 
     @GetMapping("/api/v1/posts/{id}")

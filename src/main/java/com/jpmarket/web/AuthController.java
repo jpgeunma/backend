@@ -4,6 +4,7 @@ import com.jpmarket.config.auth.LoginUser;
 import com.jpmarket.config.auth.dto.CustomUserDetails;
 import com.jpmarket.config.auth.requestAndResponse.JwtAuthResponse;
 import com.jpmarket.config.auth.requestAndResponse.LoginRequest;
+import com.jpmarket.config.auth.requestAndResponse.SignUpRequest;
 import com.jpmarket.config.jwt.JwtUtils;
 import com.jpmarket.domain.user.User;
 import com.jpmarket.domain.user.UserRepository;
@@ -48,6 +49,7 @@ public class AuthController {
             , @RequestParam(value = "rememberMe", defaultValue = "false", required = false) boolean rememberMe
             , HttpServletResponse response) throws AuthenticationException {
         logger.debug("REST request to authenticate : {}", request.getEmail());
+        System.out.println("REST request to authenticate : " +  request.getEmail());
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword());
 
@@ -71,5 +73,22 @@ public class AuthController {
         return userRepository.findById(CustomUserDetails.getId())
                 .orElseThrow(() -> new IOException("not valid Current User"));
     }
+    // TODO not implemented yet
+    @PostMapping("/signup")
+    public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {
+        logger.debug("REST request to signup : {}", signUpRequest.getEmail());
+        if(userRepository.findByEmail(signUpRequest.getEmail()).isPresent()) {
+            throw new RuntimeException("Email address already in use.");
+        }
 
+        User user = User.builder()
+                        .name(signUpRequest.getName())
+                        .email(signUpRequest.getEmail())
+                        .picture("")
+                        .build();
+        user.setPassword(signUpRequest.getPassword());
+        User result = userRepository.save(user);
+
+        return new ResponseEntity<User>(result, HttpStatus.CREATED);
+    }
 }

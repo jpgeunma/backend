@@ -34,6 +34,9 @@ public class JwtUtils {
     @Value("${jpmarget.app.jwtSecret}")
     private String jwtScret;
 
+    @Value("${jpmarget.app.jwtSecret}")
+    private byte[] jwtKey;
+
     @Value("${jpmarget.app.jwtExpirationMs}")
     private int jwtExpirationMs;
 
@@ -64,23 +67,29 @@ public class JwtUtils {
         }
 
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-
-        return JWT.create()
-                .withSubject(Long.toString(customUserDetails.getId()))
-                .withSubject(customUserDetails.getEmail())
-                .withIssuedAt(new Date())
-                .withExpiresAt(validity)
-                .withClaim(AUTHORITIES_KEY, authorities)
-                .sign(Algorithm.HMAC512(jwtScret));
-
+//        return JWT.create()
+//                .withSubject(Long.toString(customUserDetails.getId()))
+//                .withSubject(customUserDetails.getEmail())
+//                .withIssuedAt(new Date())
+//                .withExpiresAt(validity)
+//                .withClaim(AUTHORITIES_KEY, authorities)
+//                .sign(Algorithm.HMAC512(jwtKey));
+            return Jwts.builder()
+                    .setId(customUserDetails.getId().toString())
+                    .setSubject(customUserDetails.getEmail())
+                    .setIssuedAt(new Date())
+                    .claim(AUTHORITIES_KEY, authorities)
+                    .signWith(SignatureAlgorithm.HS512, jwtKey)
+                    .setExpiration(validity)
+                    .compact();
     }
     public String getUserNameFromJwtToken(String token) {
-        return  Jwts.parserBuilder().setSigningKey(jwtScret).build().parseClaimsJwt(token).getBody().getSubject();
+        return  Jwts.parserBuilder().setSigningKey(jwtKey).build().parseClaimsJwt(token).getBody().getSubject();
     }
 
     public Authentication getAuthenticationFromJwtToken(String token) {
         Claims claims = Jwts.parserBuilder()
-                .setSigningKey(jwtScret)
+                .setSigningKey(jwtKey)
                 .build()
                 .parseClaimsJwt(token)
                 .getBody();
@@ -96,23 +105,34 @@ public class JwtUtils {
     }
 
     public String getUserEmailFromJwtToken(String token) {
-        return  Jwts.parserBuilder().setSigningKey(jwtScret).build().parseClaimsJwt(token).getBody().getSubject();
+        System.out.println("JWT token Email: " + Jwts.parserBuilder().setSigningKey(jwtKey).build().parseClaimsJws(token).getBody().getSubject());
+        return  Jwts.parserBuilder().setSigningKey(jwtKey).build().parseClaimsJws(token).getBody().getSubject();
     }
     public boolean validateJwtToken(String authToken) {
         System.out.println("Trying validate token " + authToken);
         try{
-            Jwts.parserBuilder().setSigningKey(jwtScret).build().parseClaimsJwt(authToken);
+            Jwts.parserBuilder().setSigningKey(jwtKey).build().parseClaimsJws(authToken);
             return true;
         } catch (SignatureException e) {
             logger.error("Invalid JWT signature: {}", e.getMessage());
+            logger.info("JWT token compact of handler are invalid.");
+            logger.trace("JWT token compact of handler are invalid trace: ", e);
         } catch (MalformedJwtException e) {
             logger.error("Invalid JWT token: {}", e.getMessage());
+            logger.info("JWT token compact of handler are invalid.");
+            logger.trace("JWT token compact of handler are invalid trace: ", e);
         } catch (ExpiredJwtException e) {
             logger.error("JWT token is expired: {}", e.getMessage());
+            logger.info("JWT token compact of handler are invalid.");
+            logger.trace("JWT token compact of handler are invalid trace: ", e);
         } catch (UnsupportedJwtException e) {
             logger.error("JWT token is unsupported: {}", e.getMessage());
+            logger.info("JWT token compact of handler are invalid.");
+            logger.trace("JWT token compact of handler are invalid trace: ", e);
         } catch (IllegalArgumentException e) {
             logger.error("JWT claims string is empty: {}", e.getMessage());
+            logger.info("JWT token compact of handler are invalid.");
+            logger.trace("JWT token compact of handler are invalid trace: ", e);
         }
 
         return false;

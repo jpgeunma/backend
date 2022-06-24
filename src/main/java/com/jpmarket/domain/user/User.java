@@ -52,6 +52,14 @@ public class User extends BaseTimeEntity {
         this.role = role;
     }
 
+    @Builder
+    public User(String name, String email, String password, String picture, Role role) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.picture = picture;
+        this.role = role;
+    }
     public User update(String name, String picture) {
         this.name = name;
         this.picture = picture;
@@ -62,6 +70,12 @@ public class User extends BaseTimeEntity {
     public User heartTempUpdate(Long score) {
         this.heartTemp += (score - this.heartTemp) / 2;
 
+        return this;
+    }
+
+    public User setPassword(String password)
+    {
+        this.password = password;
         return this;
     }
 

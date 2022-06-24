@@ -9,12 +9,12 @@
 --
 -- INSERT INTO user_authority (user_id,authority_name) VALUES
 --                                                         ( 1, 'ROLE_ADMIN'), (1, 'ROLE_USER'), (2, 'ROLE_USER');
-INSERT INTO user (id, email, name, role) VALUES
-    ( 1, 'admin@mail.com', 'admin', 'ADMIN' );
-INSERT INTO user (id, email, name, role) VALUES
-    ( 2, 'user1@mail.com', 'admin', 'USER' );
-INSERT INTO user (id, email, name, role) VALUES
-    ( 3, 'user2@mail.com', 'guest', 'GUEST' );
+INSERT INTO user (id, email, password, name, role) VALUES
+    ( 1, 'admin@mail.com', '$2a$04$j/grJ/7hkOJmRsr9Oe6kHuFcrX81J/fv5wTfEBZqTpIETCI1mQXDm', 'admin', 'ADMIN' );
+INSERT INTO user (id, email, password, name, role) VALUES
+    ( 2, 'user1@mail.com', '$2a$04$j/grJ/7hkOJmRsr9Oe6kHuFcrX81J/fv5wTfEBZqTpIETCI1mQXDm', 'admin', 'USER' );
+INSERT INTO user (id, email, password, name, role) VALUES
+    ( 3, 'user2@mail.com', '$2a$04$j/grJ/7hkOJmRsr9Oe6kHuFcrX81J/fv5wTfEBZqTpIETCI1mQXDm', 'guest', 'GUEST' );
 
 
 INSERT INTO Posts (title, content, author) VALUES
