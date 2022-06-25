@@ -1,3 +1,4 @@
 application-oauth.properties
 application-jwt.properties
+application-mail.properties
 /src/main/resources/testImages

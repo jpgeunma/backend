@@ -55,6 +55,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
             @Override
             public boolean matches(CharSequence rawPassword, String encodedPassword) {
+                System.out.println("raw: " + rawPassword + " encoded: " + encodedPassword);
                 return BCrypt.checkpw(rawPassword.toString(), encodedPassword);
             }
         };
@@ -147,6 +148,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .successHandler(successHandler)
                 .failureHandler(failureHandler);
+
     }
 
 }

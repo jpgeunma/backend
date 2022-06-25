@@ -4,7 +4,7 @@ import com.jpmarket.config.auth.LoginUser;
 import com.jpmarket.config.auth.dto.CustomUserDetails;
 import com.jpmarket.config.auth.requestAndResponse.JwtAuthResponse;
 import com.jpmarket.config.auth.requestAndResponse.LoginRequest;
-import com.jpmarket.config.auth.requestAndResponse.SignUpRequest;
+import com.jpmarket.web.userDto.SignUpRequest;
 import com.jpmarket.config.jwt.JwtUtils;
 import com.jpmarket.domain.user.User;
 import com.jpmarket.domain.user.UserRepository;
@@ -20,7 +20,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;

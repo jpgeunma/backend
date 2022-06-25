@@ -10,12 +10,12 @@
 -- INSERT INTO user_authority (user_id,authority_name) VALUES
 --                                                         ( 1, 'ROLE_ADMIN'), (1, 'ROLE_USER'), (2, 'ROLE_USER');
 INSERT INTO user (id, email, password, name, role) VALUES
-    ( 1, 'admin@mail.com', '$2a$04$j/grJ/7hkOJmRsr9Oe6kHuFcrX81J/fv5wTfEBZqTpIETCI1mQXDm', 'admin', 'ADMIN' );
+    ( 1, 'admin@mail.com', '$2a$04$qaFN9ZOFCcX6Rc03pEQyTOjiZhEWjhWh.QywI.K46QnG0Od9Ig.Ku', 'admin', 'ADMIN');
 INSERT INTO user (id, email, password, name, role) VALUES
-    ( 2, 'user1@mail.com', '$2a$04$j/grJ/7hkOJmRsr9Oe6kHuFcrX81J/fv5wTfEBZqTpIETCI1mQXDm', 'admin', 'USER' );
+    ( 2, 'user1@mail.com', '$2a$04$V1XTgAYyONuU2i3ri0vem.2jVdtEBZtmY/ONxsiNnC/XcRyuy96Iu', 'admin', 'USER');
 INSERT INTO user (id, email, password, name, role) VALUES
-    ( 3, 'user2@mail.com', '$2a$04$j/grJ/7hkOJmRsr9Oe6kHuFcrX81J/fv5wTfEBZqTpIETCI1mQXDm', 'guest', 'GUEST' );
-
+    ( 3, 'user2@mail.com', '$2a$04$V1XTgAYyONuU2i3ri0vem.2jVdtEBZtmY/ONxsiNnC/XcRyuy96Iu', 'guest', 'GUEST');
+-- password = 1234
 
 INSERT INTO Posts (title, content, author) VALUES
     ( 'The standard Lorem Ipsum passage'

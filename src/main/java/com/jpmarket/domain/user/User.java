@@ -7,14 +7,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GenerationType;
+import javax.persistence.*;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 
 @Getter
@@ -43,6 +39,14 @@ public class User extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
+
+
+    @Column(columnDefinition = "boolean default false")
+    private boolean emailVerified;
+    @Column
+    private String emailCheckToken;
+    @Column
+    private LocalDateTime emailCheckTokenGeneratedAt;
 
     @Builder
     public User(String name, String email, String picture, Role role) {
@@ -82,4 +86,22 @@ public class User extends BaseTimeEntity {
     public String getRoleKey() {
         return this.role.getKey();
     }
+
+    public void generateEmailCheckToken() {
+        this.emailCheckToken = UUID.randomUUID().toString();
+        this.emailCheckTokenGeneratedAt = LocalDateTime.now();
+    }
+
+    public void completeSignUp() {
+        emailVerified = true;
+    }
+
+    public boolean isValidToken(String token) {
+        return this.emailCheckToken.equals(token);
+    }
+
+    public boolean canSendConfirmEmail() {
+        return emailCheckTokenGeneratedAt.isBefore(LocalDateTime.now().minusHours(1L));
+    }
+
 }
