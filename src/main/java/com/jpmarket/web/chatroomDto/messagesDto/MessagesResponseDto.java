@@ -15,6 +15,6 @@ public class MessagesResponseDto {
     public MessagesResponseDto(Messages entity) {
         this.id = entity.getRoomId();
         this.sender = entity.getSender();
-        this.message = entity.getMessage();
+        this.message = entity.getContent();
     }
 }

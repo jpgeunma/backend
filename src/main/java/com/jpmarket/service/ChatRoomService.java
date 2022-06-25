@@ -41,11 +41,11 @@ public class ChatRoomService {
 
             List<Messages> newMessagesTo = new ArrayList<>();
             messagesTo.stream().forEach(m -> {
-                if(m.getSender().equals(message.getSender()) && m.getMessage().equals(NO_MESSAGE_TEXT)){
+                if(m.getSender().equals(message.getSender()) && m.getContent().equals(NO_MESSAGE_TEXT)){
                     return;
                 }
 
-                if(m.getSender().equals(m.getReceiver()) && m.getMessage().equals(NO_MESSAGE_TEXT)){
+                if(m.getSender().equals(m.getReceiver()) && m.getContent().equals(NO_MESSAGE_TEXT)){
                     return;
                 }
 
@@ -54,11 +54,11 @@ public class ChatRoomService {
 
             List<Messages> newMessagesFrom = new ArrayList<>();
             newMessagesFrom.stream().forEach(m -> {
-                if(m.getSender().equals(message.getReceiver()) && m.getMessage().equals(NO_MESSAGE_TEXT)){
+                if(m.getSender().equals(message.getReceiver()) && m.getContent().equals(NO_MESSAGE_TEXT)){
                     return;
                 }
 
-                if(m.getSender().equals(m.getReceiver()) && m.getMessage().equals(NO_MESSAGE_TEXT)){
+                if(m.getSender().equals(m.getReceiver()) && m.getContent().equals(NO_MESSAGE_TEXT)){
                     return;
                 }
 

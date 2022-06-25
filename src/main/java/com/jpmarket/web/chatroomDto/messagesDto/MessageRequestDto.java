@@ -22,12 +22,11 @@ public class MessageRequestDto {
         this.message = message;
     }
 
-    public Messages toEntity() {
-
+    public Messages toEntity(Long roomId, String sender, String content) {
         return Messages.builder()
                 .roomId(roomId)
                 .sender(sender)
-                .message(message)
+                .content(content)
                 .build();
     }
 }

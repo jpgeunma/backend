@@ -28,16 +28,16 @@ public class Messages extends BaseTimeEntity {
     private String receiver;
 
     @Column
-    private String message;
+    private String content;
 
     private MessagesType type;
 
     @Builder
-    Messages (Long roomId, String sender, String receiver, String message)
+    Messages (Long roomId, String sender, String receiver, String content)
     {
         this.roomId = roomId;
         this.sender = sender;
         this.receiver = receiver;
-        this.message = message;
+        this.content = content;
     }
 }
