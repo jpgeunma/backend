@@ -24,6 +24,10 @@ public class Pictures extends BaseTimeEntity {
     @Column(nullable = false)
     private String originalFileName;
 
+    private String saltedFileName;
+
+    private String savedFileName;
+
     @Column(nullable = false)
     private String storedFolderPath;
 

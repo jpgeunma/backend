@@ -6,6 +6,7 @@ import com.jpmarket.domain.pictures.Pictures;
 import com.jpmarket.domain.pictures.PicturesRepository;
 import com.jpmarket.service.PicturesService;
 import com.jpmarket.web.picturesDto.PicturesUploadRequestDto;
+import net.coobird.thumbnailator.Thumbnailator;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -104,7 +105,7 @@ public class PicturesApiControllerTest {
 
         PicturesUploadRequestDto requestDto = PicturesUploadRequestDto.builder()
                 .boardId(boardId)
-                .fileName(fileName)
+                .originalFileName(fileName)
                 .build();
 
         byte [] test = new ObjectMapper().writeValueAsBytes(requestDto);

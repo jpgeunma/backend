@@ -28,6 +28,9 @@ public class Posts extends BaseTimeEntity {
     @Column(nullable = false)
     private String author;
 
+    @Column
+    private Long cost;
+
     @Column(columnDefinition = "integer default 0")
     private Long status;
 

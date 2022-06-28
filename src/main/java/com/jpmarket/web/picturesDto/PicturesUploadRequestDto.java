@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.persistence.Column;
 import java.time.LocalDateTime;
 
 @Getter
@@ -15,22 +16,27 @@ public class PicturesUploadRequestDto {
 
     private Long boardId;
 
-    private String fileName;
+    private String originalFileName;
 
+    private String saltedFileName;
+
+    private String saveName;
     private String folderPath;
 
     private LocalDateTime uploadedDate;
 
     @Builder
-    public PicturesUploadRequestDto(Long boardId, String fileName) {
+    public PicturesUploadRequestDto(Long boardId, String originalFileName) {
         this.boardId = boardId;
-        this.fileName = fileName;
+        this.originalFileName = originalFileName;
     }
 
     public Pictures toEntity() {
         return Pictures.builder()
                 .boardId(boardId)
-                .originalFileName(fileName)
+                .originalFileName(originalFileName)
+                .saltedFileName(saltedFileName)
+                .savedFileName(saveName)
                 .storedFolderPath(folderPath)
                 .build();
 

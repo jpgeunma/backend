@@ -9,6 +9,8 @@ public class PostsResponseDto {
     private Long id;
     private String title;
     private String content;
+
+    private Long cost;
     private String author;
 
     private Long status;
@@ -22,6 +24,7 @@ public class PostsResponseDto {
         this.id = entity.getId();
         this.title = entity.getTitle();
         this.content = entity.getContent();
+        this.cost = entity.getCost();
         this.author = entity.getAuthor();
         this.status = entity.getStatus();
         this.location = entity.getLocation();

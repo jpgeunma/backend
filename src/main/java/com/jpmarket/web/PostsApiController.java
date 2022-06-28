@@ -18,7 +18,7 @@ public class PostsApiController {
 
     private final PostsService postsService;
 
-    @PostMapping("/api/v1/posts")
+    @PostMapping("/api/v1/posts/save")
     public Long save(@RequestBody PostsSaveRequestDto requestDto) {
         return postsService.save(requestDto);
     }
@@ -33,7 +33,7 @@ public class PostsApiController {
         postsService.delete(id);
         return id;
     }
-    @GetMapping("/api/v1/posts")
+    @GetMapping("/api/v1/posts/hot")
     public ResponseEntity<List<PostsListResponseDto>> findTenPostsByView () {
         return new ResponseEntity<>(postsService.findTenPostsByViewed(), HttpStatus.OK);
     }

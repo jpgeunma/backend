@@ -4,6 +4,8 @@ import com.jpmarket.config.auth.LoginUser;
 import com.jpmarket.config.auth.dto.CustomUserDetails;
 import com.jpmarket.config.auth.requestAndResponse.JwtAuthResponse;
 import com.jpmarket.config.auth.requestAndResponse.LoginRequest;
+import com.jpmarket.service.UserService;
+import com.jpmarket.web.userDto.GetCurrentUserDto;
 import com.jpmarket.web.userDto.SignUpRequest;
 import com.jpmarket.config.jwt.JwtUtils;
 import com.jpmarket.domain.user.User;
@@ -40,6 +42,9 @@ public class AuthController {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private UserService userService;
+
 
     private final String AUTHORIZATION_HEADER = "Authorization";
 
@@ -65,28 +70,28 @@ public class AuthController {
         }
     }
 
-    @PostMapping("/user")
+    @GetMapping("/user")
     @PreAuthorize("hasRole('USER')")
-    public User getCurrentUser(@LoginUser CustomUserDetails CustomUserDetails) {
+    public GetCurrentUserDto getCurrentUser(@LoginUser CustomUserDetails CustomUserDetails) {
         logger.debug("REST request to get user : {}", CustomUserDetails.getEmail());
-        return userRepository.findById(CustomUserDetails.getId())
+        User user = userRepository.findById(CustomUserDetails.getId())
                 .orElseThrow(() -> new IOException("not valid Current User"));
+
+        return GetCurrentUserDto.builder()
+                .name(user.getName())
+                .email(user.getEmail())
+                .build();
     }
     // TODO not implemented yet
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {
         logger.debug("REST request to signup : {}", signUpRequest.getEmail());
+        System.out.println("REST request to signup : " + signUpRequest.getEmail());
         if(userRepository.findByEmail(signUpRequest.getEmail()).isPresent()) {
             throw new RuntimeException("Email address already in use.");
         }
 
-        User user = User.builder()
-                        .name(signUpRequest.getName())
-                        .email(signUpRequest.getEmail())
-                        .picture("")
-                        .build();
-        user.setPassword(signUpRequest.getPassword());
-        User result = userRepository.save(user);
+        User result = userService.processNewAccount(signUpRequest);
 
         return new ResponseEntity<User>(result, HttpStatus.CREATED);
     }
