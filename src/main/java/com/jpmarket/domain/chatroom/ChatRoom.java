@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.Set;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @Entity
 public class ChatRoom extends BaseTimeEntity {

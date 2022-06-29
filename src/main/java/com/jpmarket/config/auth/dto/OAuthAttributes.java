@@ -29,10 +29,14 @@ public class OAuthAttributes {
     public static OAuthAttributes of(String registrationId,
                                      String userNameAttributeName,
                                      Map<String, Object> attributes) {
-            if("naver".equals(registrationId)) {
+        switch(registrationId) {
+            case "google":
+                return ofGoogle(userNameAttributeName, attributes);
+            case "naver":
 
-            }
-            return ofGoogle(userNameAttributeName, attributes);
+            default:
+                throw new RuntimeException();
+        }
     }
 
     private static OAuthAttributes ofGoogle(String

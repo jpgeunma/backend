@@ -34,6 +34,8 @@ public class SuccessHandler extends SimpleUrlAuthenticationSuccessHandler  {
 
         String targetUrl = determineTargetUrl(request, response, authentication);
 
+        System.out.println("SuccessHandler targetUrl"+ targetUrl);
+
         if (response.isCommitted()) {
             logger.debug("Response has already been committed. Unable to redirect to " + targetUrl);
             return;
@@ -47,14 +49,18 @@ public class SuccessHandler extends SimpleUrlAuthenticationSuccessHandler  {
     protected String determineTargetUrl(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws ServletException {
         Optional<String> redirectUri = CookieUtils.getCookie(request, REDIRECT_URI_PARAM_COOKIE_NAME)
                 .map(Cookie::getValue);
+        System.out.println("determineTargetUrl redirectUri"+ redirectUri);
 
-        if(redirectUri.isPresent()) {
+        if(!redirectUri.isPresent()) {
             throw new ServletException("Sorry! We've got an Unauthorized Redirect URI and can't proceed with the authentication Status");
         }
 
         String targetUrl = redirectUri.orElse(getDefaultTargetUrl());
 
         String token = jwtUtils.generateJwtToken(authentication);
+
+        System.out.println("determineTargetUrl targetUrl"+ targetUrl);
+        System.out.println("determineTargetUrl token"+ token);
 
         return UriComponentsBuilder.fromUriString(targetUrl)
                 .queryParam("token", token)

@@ -16,6 +16,7 @@ public class HttpCookieOAuth2AuthorizationRequestRepository implements Authoriza
     @Override
     public OAuth2AuthorizationRequest loadAuthorizationRequest(HttpServletRequest request) {
         Assert.notNull(request, "request cannot be null");
+        System.out.println("loadAuthorizationRequest " + request);
         return CookieUtils.getCookie(request, OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME)
                 .map(cookie -> CookieUtils.deserialize(cookie, OAuth2AuthorizationRequest.class))
                 .orElse(null);
@@ -25,6 +26,8 @@ public class HttpCookieOAuth2AuthorizationRequestRepository implements Authoriza
     public void saveAuthorizationRequest(OAuth2AuthorizationRequest authorizationRequest, HttpServletRequest request, HttpServletResponse response) {
         Assert.notNull(request, "request cannot be null");
         Assert.notNull(response, "response cannot be null");
+        System.out.println("saveAuthorizationRequest " + request);
+        System.out.println("saveAuthorizationRequest " + response);
 
         if (authorizationRequest == null) {
             CookieUtils.deleteCookie(request, response, OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME);
@@ -43,6 +46,8 @@ public class HttpCookieOAuth2AuthorizationRequestRepository implements Authoriza
     @Override
     public OAuth2AuthorizationRequest removeAuthorizationRequest(HttpServletRequest request) {
         Assert.notNull(request, "request cannot be null");
+        System.out.println("removeAuthorizationRequest " + request);
+
         /*
             Ideally, the saved OAuth2AuthorizationRequest should be removed in this method.
 

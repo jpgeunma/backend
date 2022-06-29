@@ -101,6 +101,9 @@ INSERT INTO Posts (title, content, author) VALUES
 INSERT INTO Pictures (id, board_id, original_file_name, stored_folder_path) VALUES
     ( 1, 1, 'test.png', 'src/main/resources/testImages/upload/2022/06/28/1_test.png' );
 
+
+-- INSERT INTO CHATROOM (id, seller_id, buyer_id) VALUES
+--     (1, 1, 2);
 -- INSERT INTO comment (body, created_date, last_modified_date, post_id, user_id) VALUES
 --     ( 'Nunc et enim ut metus ultricies porta. Praesent cursus sit amet sem a ultrices. In sollicitudin vestibulum eros eu pretium.'
 --     , now()-5, now()-5, 1, 1);
