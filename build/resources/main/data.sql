@@ -99,7 +99,7 @@ INSERT INTO Posts (title, content, author) VALUES
     ,  'keumtae.kim');
 
 INSERT INTO Pictures (id, board_id, original_file_name, stored_folder_path) VALUES
-    ( 1, 1, 'test.png', 'src/main/resources/testImages/upload/2022/06/28/1_test.png' );
+    ( 1, 3, 'test.png', 'src/main/resources/testImages/upload/2022/06/28/1_test.png' );
 
 
 -- INSERT INTO CHATROOM (id, seller_id, buyer_id) VALUES

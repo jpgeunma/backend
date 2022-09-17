@@ -58,7 +58,7 @@ public class JwtUtils {
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
 
-        Long now = (new Date()).getTime();
+        Long now = (Long)(new Date()).getTime();
         Date validity;
         if (rememberMe) {
             validity = new Date(now + 10 * jwtExpirationMs);

@@ -47,13 +47,13 @@ public class Posts extends BaseTimeEntity {
 //    private Location
 //    //TODO 구글맵 장소 추가
 
-    @Column(columnDefinition = "integer default 0")
+    @Column(columnDefinition = "BIGINT default 0")
     private Long viewed;
 
-    @Column(columnDefinition = "integer default 0")
+    @Column(columnDefinition = "BIGINT default 0")
     private Long commentsNum;
 
-    @Column(columnDefinition = "integer default 0")
+    @Column(columnDefinition = "BIGINT default 0")
     private Long favoritesNum;
 
     @Builder

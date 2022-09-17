@@ -16,6 +16,10 @@ public class PostsListResponseDto {
     private Long cost;
     private LocalDateTime modifiedDate;
 
+    private Long commentsNum;
+
+    private Long favoritesNum;
+
     public PostsListResponseDto(Posts entity) {
         this.id = entity.getId();
         this.title = entity.getTitle();
@@ -23,5 +27,7 @@ public class PostsListResponseDto {
         this.content = entity.getContent();
         this.cost = entity.getCost();
         this.modifiedDate = entity.getModifiedDate();
+        this.commentsNum = entity.getCommentsNum();
+        this.favoritesNum = entity.getFavoritesNum();
     }
 }

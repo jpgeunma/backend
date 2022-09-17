@@ -59,8 +59,8 @@ public class SuccessHandler extends SimpleUrlAuthenticationSuccessHandler  {
 
         String token = jwtUtils.generateJwtToken(authentication);
 
-        System.out.println("determineTargetUrl targetUrl"+ targetUrl);
-        System.out.println("determineTargetUrl token"+ token);
+        System.out.println("determineTargetUrl targetUrl "+ targetUrl);
+        System.out.println("determineTargetUrl token "+ token);
 
         return UriComponentsBuilder.fromUriString(targetUrl)
                 .queryParam("token", token)

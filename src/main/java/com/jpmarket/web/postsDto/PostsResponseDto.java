@@ -20,6 +20,12 @@ public class PostsResponseDto {
     private Long category;
 
     private Long buyerId;
+
+    private Long viewed;
+
+    private Long commentsNum;
+
+    private Long favoritesNum;
     public PostsResponseDto(Posts entity) {
         this.id = entity.getId();
         this.title = entity.getTitle();
@@ -30,5 +36,8 @@ public class PostsResponseDto {
         this.location = entity.getLocation();
         this.category = entity.getCategory();
         this.buyerId = entity.getBuyerId();
+        this.viewed = entity.getViewed();
+        this.commentsNum = entity.getCommentsNum();
+        this.favoritesNum = entity.getFavoritesNum();
     }
 }
