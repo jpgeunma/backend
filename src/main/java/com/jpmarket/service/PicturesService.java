@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @Service
 public class PicturesService {
@@ -21,5 +23,10 @@ public class PicturesService {
     @Transactional
     public Pictures findByOriginalFileName(String fileName) {
         return picturesRepository.findByOriginalFileName(fileName);
+    }
+
+    @Transactional
+    public List<Pictures> findByBoardId(Long boardId) {
+        return picturesRepository.findallByBoardId(boardId);
     }
 }

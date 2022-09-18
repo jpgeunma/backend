@@ -85,14 +85,14 @@ public class PicturesApiController {
         return new ResponseEntity<>(responseDtos, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/api/v1/pictures/{fileOriginName}")
+    @GetMapping(value = "/api/v1/pictures/test/{fileOriginName}")
     public ResponseEntity<Resource> getImageByName(@PathVariable("fileOriginName") String fileName) {
         Pictures pictures = picturesService.findByOriginalFileName(fileName);
         String storedFolderPath = pictures.getStoredFolderPath();
         logger.debug(fileName);
         logger.debug(storedFolderPath);
-        System.out.println("fileName: "+fileName);
-        System.out.println("saltedFolderPath: "+storedFolderPath);
+        logger.info("fileName: "+fileName);
+        logger.info("saltedFolderPath: "+storedFolderPath);
         try{
             FileSystemResource resource = new FileSystemResource(storedFolderPath);
             if (!resource.exists()) {
@@ -106,6 +106,27 @@ public class PicturesApiController {
         } catch (Exception e) {
             System.out.println("fileName: "+fileName);
             System.out.println("saltedFolderPath: "+storedFolderPath);
+            return null;
+        }
+    }
+
+    @GetMapping(value = "/api/v1/pictures/{boardId}")
+    public ResponseEntity<Resource> getImageByBoardId(@PathVariable Long boardId){
+        List<Pictures> pictures = picturesService.findByBoardId(boardId);
+        // TODO
+        // originally designed to send multiple images
+        String storedFolderPath = pictures.get(0).getStoredFolderPath();
+        try{
+            FileSystemResource resource = new FileSystemResource(storedFolderPath);
+            if (!resource.exists()) {
+                throw new FileNotFoundException();
+            }
+            HttpHeaders headers = new HttpHeaders();
+            Path filePath = Paths.get(storedFolderPath);
+            headers.add("Content-Type", Files.probeContentType(filePath));
+            return new ResponseEntity<Resource>(resource, headers, HttpStatus.OK);
+
+        } catch (Exception e) {
             return null;
         }
     }
