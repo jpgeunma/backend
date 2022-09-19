@@ -49,6 +49,8 @@ public class PicturesApiController {
         Long boardId = requestDto.getBoardId();
         LocalDateTime createdDateTime = LocalDateTime.now();
 
+        logger.info("boardId: ", requestDto.toEntity());
+
         // check type of file
         if(uploadFile.getContentType().startsWith("image") == false) {
             return new ResponseEntity<>(new ArrayList<>(), HttpStatus.BAD_REQUEST);

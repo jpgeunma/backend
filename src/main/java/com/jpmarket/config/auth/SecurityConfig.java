@@ -131,7 +131,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/api/v1/posts/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/v1/pictures/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/comments/**").permitAll()
-                .antMatchers("/", "/error", "/api/authenticate/**", "/api/register",
+                .antMatchers(HttpMethod.GET, "/auth/user", "/auth/registrationConfirm").permitAll()
+                .antMatchers(HttpMethod.POST, "/auth/signup", "/auth/authenticate").permitAll()
+                .antMatchers("/", "/error",
                         "/auth/authenticate", "/auth/signup", "/oauth2/**", "/h2-console/**",
                         "/v2/**", "/swagger-ui.html", "/swagger-resources/**")
                 .permitAll()

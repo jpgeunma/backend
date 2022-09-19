@@ -43,10 +43,6 @@ public class User extends BaseTimeEntity {
 
     @Column(columnDefinition = "boolean default false")
     private boolean emailVerified;
-    @Column
-    private String emailCheckToken;
-    @Column
-    private LocalDateTime emailCheckTokenGeneratedAt;
 
     @Builder
     public User(String name, String email, String picture, Role role) {
@@ -83,25 +79,23 @@ public class User extends BaseTimeEntity {
         return this;
     }
 
+    public User setEmailVerified(Boolean set){
+        this.emailVerified = set;
+        return this;
+    }
+
     public String getRoleKey() {
         return this.role.getKey();
     }
 
-    public void generateEmailCheckToken() {
-        this.emailCheckToken = UUID.randomUUID().toString();
-        this.emailCheckTokenGeneratedAt = LocalDateTime.now();
+    public void setRole(Role role){
+        this.role = role;
     }
 
     public void completeSignUp() {
         emailVerified = true;
     }
 
-    public boolean isValidToken(String token) {
-        return this.emailCheckToken.equals(token);
-    }
 
-    public boolean canSendConfirmEmail() {
-        return emailCheckTokenGeneratedAt.isBefore(LocalDateTime.now().minusHours(1L));
-    }
 
 }
