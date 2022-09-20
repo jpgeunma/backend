@@ -40,6 +40,7 @@ public class UserService {
     @Transactional
     public User processNewAccount(@Valid SignUpRequest signUpRequest) {
         User newUser = getNewUserModel(signUpRequest);
+        System.out.println("---------------------------------------------test");
         sendSignUpConfirmEmail(newUser);
         return newUser;
     }

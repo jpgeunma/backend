@@ -96,6 +96,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //                                    .userService(customOAuth2UserService);
 //
 //        //TODO 시큐리티 체크. 포스팅시 오류 떠서 적음. 무슨 뜻인지 모름
+//        //TODO 출시 때 csrf 적용 필요
 //        http.cors().configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues());
 //
 //        http.addFilterBefore(new AuthTokenFilter(), UsernamePasswordAuthenticationFilter.class);
