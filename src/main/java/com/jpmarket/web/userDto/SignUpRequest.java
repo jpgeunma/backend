@@ -20,6 +20,10 @@ public class SignUpRequest {
     @Length(min = 8, max = 50)
     private String password;
 
+    @NotBlank
+    @Length(min = 36, max = 36)
+    private String doubleCheckToken;
+
     public String getName() {
         return name;
     }
@@ -40,6 +44,9 @@ public class SignUpRequest {
         return password;
     }
 
+    public String getDoubleCheckToken() {return this.doubleCheckToken;}
+
+    public void setDoubleCheckToken(String doubleCheckToken) {this.doubleCheckToken = doubleCheckToken;}
     public void setPassword(String password) {
         this.password = password;
     }

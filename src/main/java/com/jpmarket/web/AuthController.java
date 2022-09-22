@@ -1,5 +1,6 @@
 package com.jpmarket.web;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.jpmarket.config.auth.LoginUser;
 import com.jpmarket.config.auth.dto.CustomUserDetails;
 import com.jpmarket.config.auth.requestAndResponse.JwtAuthResponse;
@@ -28,6 +29,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintValidator;
 import javax.validation.Valid;
@@ -86,23 +88,28 @@ public class AuthController {
                 .build();
     }
     @PostMapping("/signup")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {
-        logger.debug("REST request to signup : {}", signUpRequest.getEmail());
-        System.out.println("REST request to signup : " + signUpRequest.getEmail());
-        logger.info("emil exiest: " + userService.checkExistByEmail(signUpRequest.getEmail()));
-        if(userService.checkExistByEmail(signUpRequest.getEmail())) {
+    public ResponseEntity<?> registerUser(HttpServletRequest httpServletRequest) {
+        logger.debug("REST request to signup : {}", httpServletRequest.getParameter("email"));
+        System.out.println("REST request to signup : " + httpServletRequest.getParameter("email"));
+        logger.info("emil exiest: " + userService.checkExistByEmail(httpServletRequest.getParameter("email")));
+        if(userService.checkExistByEmail(httpServletRequest.getParameter("email"))){
             throw new RuntimeException("Email address already in use.");
         }
-        else if(signUpRequest.getName().isEmpty())
+        else if(httpServletRequest.getParameter("name").isEmpty())
         {
             throw new RuntimeException(("UserName empty"));
         }
         else{
-            Matcher emailMatcher = emailPattern.matcher(signUpRequest.getEmail());
-            Matcher passwordMatcher = passwordPattern.matcher(signUpRequest.getPassword());
+            Matcher emailMatcher = emailPattern.matcher(httpServletRequest.getParameter("email"));
+            Matcher passwordMatcher = passwordPattern.matcher(httpServletRequest.getParameter("password"));
             if(!emailMatcher.matches() && !passwordMatcher.matches() )
                 throw new RuntimeException("Email or Password is wrong format");
         }
+        SignUpRequest signUpRequest = new SignUpRequest();
+        signUpRequest.setName(httpServletRequest.getParameter("name"));
+        signUpRequest.setPassword(httpServletRequest.getParameter("password"));
+        signUpRequest.setEmail(httpServletRequest.getParameter("email"));
+        signUpRequest.setDoubleCheckToken(httpServletRequest.getParameter("doubleCheckToken"));
         User result = userService.processNewAccount(signUpRequest);
 
         return new ResponseEntity<User>(result, HttpStatus.CREATED);
