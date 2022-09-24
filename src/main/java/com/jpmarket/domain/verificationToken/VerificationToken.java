@@ -17,8 +17,8 @@ import java.util.Date;
 @Getter
 public class VerificationToken {
 
-    @Value("${jpmarget.app.jwtExpirationMs}")
-    private int EXPIRATION;
+
+    private static final int EXPIRATION = 3;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +26,7 @@ public class VerificationToken {
 
     private String token;
 
-    @OneToOne(targetEntity = User.class, fetch = FetchType.EAGER, cascade=CascadeType.ALL)
+    @OneToOne(targetEntity = User.class, fetch = FetchType.EAGER, cascade=CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(nullable = false, name = "user_id")
     private User user;
 
@@ -43,6 +43,6 @@ public class VerificationToken {
     public VerificationToken(String token, User user){
         this.token = token;
         this.user = user;
-        this.expiryDate = this.calculateExpiryDate(5);
+        this.expiryDate = this.calculateExpiryDate(VerificationToken.EXPIRATION);
     }
 }

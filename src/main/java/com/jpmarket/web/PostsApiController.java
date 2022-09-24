@@ -1,4 +1,6 @@
 package com.jpmarket.web;
+import com.jpmarket.config.auth.LoginUser;
+import com.jpmarket.config.auth.dto.CustomUserDetails;
 import com.jpmarket.service.PostsService;
 import com.jpmarket.web.postsDto.PostsListResponseDto;
 import com.jpmarket.web.postsDto.PostsResponseDto;
@@ -24,7 +26,8 @@ public class PostsApiController {
     }
 
     @PutMapping("/api/v1/posts/{id}")
-    public Long update(@PathVariable Long id, @RequestBody PostsUpdateRequestDto requestDto) {
+    public Long update(@PathVariable Long id, @RequestBody PostsUpdateRequestDto requestDto, @LoginUser CustomUserDetails customUserDetails) {
+        System.out.println("User who reqeust update: " + customUserDetails.);
         return postsService.update(id, requestDto);
     }
 

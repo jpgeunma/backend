@@ -4,16 +4,15 @@ import com.jpmarket.config.auth.LoginUser;
 import com.jpmarket.config.auth.dto.CustomUserDetails;
 import com.jpmarket.config.auth.requestAndResponse.JwtAuthResponse;
 import com.jpmarket.config.auth.requestAndResponse.LoginRequest;
-import com.jpmarket.domain.user.Role;
 import com.jpmarket.domain.verificationToken.VerificationToken;
 import com.jpmarket.service.UserService;
+import com.jpmarket.web.userDto.ChangePasswordDto;
 import com.jpmarket.web.userDto.GetCurrentUserDto;
-import com.jpmarket.web.userDto.SignUpRequest;
+import com.jpmarket.web.userDto.SignUpRequestDto;
 import com.jpmarket.config.jwt.JwtUtils;
 import com.jpmarket.domain.user.User;
-import com.jpmarket.domain.user.UserRepository;
-import io.jsonwebtoken.io.IOException;
-import jdk.nashorn.internal.runtime.regexp.joni.Regex;
+import com.jpmarket.web.userDto.UserResponseDto;
+import net.bytebuddy.utility.RandomString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,13 +25,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.request.WebRequest;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.ConstraintValidator;
 import javax.validation.Valid;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -75,6 +73,7 @@ public class AuthController {
         }
     }
 
+
     @GetMapping("/user")
     @PreAuthorize("hasRole('USER')")
     public GetCurrentUserDto getCurrentUser(@LoginUser CustomUserDetails CustomUserDetails) {
@@ -86,24 +85,21 @@ public class AuthController {
                 .build();
     }
     @PostMapping("/signup")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {
-        logger.debug("REST request to signup : {}", signUpRequest.getEmail());
-        System.out.println("REST request to signup : " + signUpRequest.getEmail());
-        logger.info("emil exiest: " + userService.checkExistByEmail(signUpRequest.getEmail()));
-        if(userService.checkExistByEmail(signUpRequest.getEmail())) {
-            throw new RuntimeException("Email address already in use.");
-        }
-        else if(signUpRequest.getName().isEmpty())
+    public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequestDto signUpRequestDto) {
+        logger.debug("REST request to signup : {}", signUpRequestDto.getEmail());
+        System.out.println("REST request to signup : " + signUpRequestDto.getEmail());
+        logger.info("emil exiest: " + userService.checkExistByEmail(signUpRequestDto.getEmail()));
+        if(signUpRequestDto.getName().isEmpty())
         {
             throw new RuntimeException(("UserName empty"));
         }
         else{
-            Matcher emailMatcher = emailPattern.matcher(signUpRequest.getEmail());
-            Matcher passwordMatcher = passwordPattern.matcher(signUpRequest.getPassword());
+            Matcher emailMatcher = emailPattern.matcher(signUpRequestDto.getEmail());
+            Matcher passwordMatcher = passwordPattern.matcher(signUpRequestDto.getPassword());
             if(!emailMatcher.matches() && !passwordMatcher.matches() )
                 throw new RuntimeException("Email or Password is wrong format");
         }
-        User result = userService.processNewAccount(signUpRequest);
+        User result = userService.processNewAccount(signUpRequestDto);
 
         return new ResponseEntity<User>(result, HttpStatus.CREATED);
     }
@@ -123,9 +119,48 @@ public class AuthController {
         }
         logger.info("email confirmed: " + user.getEmail());
         userService.updateEmailVerified(user);
-
+        userService.deleteVerificationTokenByUser(user);
         return "email verified";
     }
 
+    @PostMapping("/user/resetPassword")
+    public String forgotPassword(@RequestParam("email") String email)
+    {
+        UserResponseDto user = userService.findByEmail(email);
+        if(user == null) {
+            return "User not found Exception";
+        }
+        String token = UUID.randomUUID().toString();
+        userService.createVerificationToken(user.toEntity(), token);
+        userService.sendResetPasswordEmail(user.toEntity());
+
+        return "email sent";
+    }
+
+    @GetMapping("/reset")
+    public String resetPassword(@RequestParam("token") String token)
+    {
+        VerificationToken verificationToken = userService.getVerificationToken(token);
+        String newPassword = RandomString.make(10);
+        logger.info("email token: " + token);
+        if (verificationToken == null) {
+            return "auth.message.invalidToken";
+        }
+        User user = verificationToken.getUser();
+        Calendar calendar = Calendar.getInstance();
+        if((verificationToken.getExpiryDate().getTime() - calendar.getTime().getTime()) <= 0) {
+            userService.deleteVerificationTokenByUser(user);
+            return "badUser time exceeded";
+        }
+        logger.info("email confirmed: " + user.getEmail());
+        userService.updatePassword(user, newPassword);
+        return "password changed: " + newPassword;
+    }
+
+//    @PostMapping("/changePassword")
+//    public ChangePasswordDto changePassword(@RequestBody ChangePasswordDto passwordDto)
+//    {
+//        return userService.updatePassword();
+//    }
 }
 
