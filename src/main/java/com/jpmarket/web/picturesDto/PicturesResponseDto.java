@@ -1,5 +1,6 @@
 package com.jpmarket.web.picturesDto;
 
+import com.jpmarket.domain.BaseTimeEntity;
 import com.jpmarket.domain.pictures.Pictures;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,7 +11,7 @@ import java.net.URLEncoder;
 
 @Data
 @AllArgsConstructor
-public class PicturesResponseDto {
+public class PicturesResponseDto extends BaseTimeEntity {
 
     private Long boardId;
 

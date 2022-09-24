@@ -2,10 +2,7 @@ package com.jpmarket.config.auth.dto;
 
 import com.jpmarket.config.auth.HttpCookieOAuth2AuthorizationRequestRepository;
 import com.jpmarket.config.jwt.CookieUtils;
-import com.jpmarket.domain.user.User;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;

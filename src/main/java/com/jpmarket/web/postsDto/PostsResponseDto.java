@@ -13,6 +13,8 @@ public class PostsResponseDto {
     private Long cost;
     private String author;
 
+    private Long userId;
+
     private Long status;
 
     private Long location;
@@ -32,6 +34,7 @@ public class PostsResponseDto {
         this.content = entity.getContent();
         this.cost = entity.getCost();
         this.author = entity.getAuthor();
+        this.userId = entity.getUserId();
         this.status = entity.getStatus();
         this.location = entity.getLocation();
         this.category = entity.getCategory();
@@ -39,5 +42,18 @@ public class PostsResponseDto {
         this.viewed = entity.getViewed();
         this.commentsNum = entity.getCommentsNum();
         this.favoritesNum = entity.getFavoritesNum();
+    }
+
+    public Posts toEntity() {
+        return Posts.builder()
+                .id(this.id)
+                .userId(this.userId)
+                .title(this.title)
+                .content(this.content)
+                .author(this.author)
+                .buyerId(this.buyerId)
+                .category(this.category)
+                .location(this.location)
+                .build();
     }
 }

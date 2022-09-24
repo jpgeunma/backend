@@ -21,6 +21,7 @@ public class UserResponseDto {
 
     public User toEntity() {
         return User.builder()
+                .id(id)
                 .email(email)
                 .build();
     }

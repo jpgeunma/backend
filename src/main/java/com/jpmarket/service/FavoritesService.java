@@ -2,6 +2,8 @@ package com.jpmarket.service;
 
 import com.jpmarket.domain.favorites.Favorites;
 import com.jpmarket.domain.favorites.FavoritesRepository;
+import com.jpmarket.domain.posts.Posts;
+import com.jpmarket.domain.user.User;
 import com.jpmarket.web.favoritesDto.FavoritesListResponseDto;
 import com.jpmarket.web.favoritesDto.FavoritesSaveRequestDto;
 import lombok.RequiredArgsConstructor;
@@ -18,9 +20,15 @@ public class FavoritesService {
     private final FavoritesRepository favoritesRepository;
 
     @Transactional
-    public Long save(FavoritesSaveRequestDto requestDto)
+    public Long save(User user, Posts posts)
     {
-        return favoritesRepository.save(requestDto.toEntity()).getId();
+        Favorites favorites = Favorites.builder()
+                .user(user)
+                .posts(posts)
+                .build();
+        if(favoritesRepository.findByUserAndPosts(user, posts).isPresent())
+            return favoritesRepository.deleteFavoritesByUserAndPosts(user, posts);
+        return favoritesRepository.save(favorites).getId();
     }
 
 

@@ -6,7 +6,7 @@ import com.jpmarket.domain.user.User;
 import com.jpmarket.domain.user.UserRepository;
 import com.jpmarket.domain.verificationToken.VerificationToken;
 import com.jpmarket.domain.verificationToken.VerificationTokenRepository;
-import com.jpmarket.web.userDto.ChangePasswordDto;
+import com.jpmarket.web.userDto.UserModifyInfoDto;
 import com.jpmarket.web.userDto.SignUpRequestDto;
 import com.jpmarket.web.userDto.UserResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -98,6 +98,15 @@ public class UserService {
     @Transactional
     public void updatePassword(User user, String newPassword) {
         user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+    }
+
+    @Transactional
+    public void updateUser(Long userId, UserModifyInfoDto userModifyInfoDto)
+    {
+        User user = userRepository.findById(userId)
+                .orElseThrow(()->new IllegalArgumentException("해당 게시글이 없습니다. id="));
+        user.setName(userModifyInfoDto.getNickname());
         userRepository.save(user);
     }
 

@@ -1,4 +1,4 @@
-package com.jpmarket.config.auth.requestAndResponse;
+package com.jpmarket.web.userDto;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -12,7 +12,7 @@ import java.io.Serializable;
 @JsonSerialize
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonAutoDetect
-public class JwtAuthResponse implements Serializable {
+public class UserJwtAuthResponse implements Serializable {
     private static final long serialVersionUID = 129221684671752687L;
 
     private final String token;
@@ -32,7 +32,7 @@ public class JwtAuthResponse implements Serializable {
         return ToStringMethod.prefixedBySimpleClassName().toString();
     }
 
-    public JwtAuthResponse(String token) {
+    public UserJwtAuthResponse(String token) {
         this.token = token;
     }
 

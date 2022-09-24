@@ -28,6 +28,8 @@ public class Posts extends BaseTimeEntity {
     @Column(nullable = false)
     private String author;
 
+    private Long userId;
+
     @Column
     private Long cost;
 
@@ -57,11 +59,13 @@ public class Posts extends BaseTimeEntity {
     private Long favoritesNum;
 
     @Builder
-    public Posts(String title, String content, String author,
+    public Posts(Long id, String title, String content, String author, Long userId,
                  Long location, Long category, Long buyerId) {
+        this.id = id;
         this.title = title;
         this.content = content;
         this.author = author;
+        this.userId = userId;
         this.location = location;
         this.category = category;
         this.buyerId = buyerId;

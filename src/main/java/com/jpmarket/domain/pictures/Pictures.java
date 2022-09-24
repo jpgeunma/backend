@@ -21,6 +21,8 @@ public class Pictures extends BaseTimeEntity {
     @Column(nullable = false)
     private Long boardId;
 
+    private Long boardCategory;
+
     @Column(nullable = false)
     private String originalFileName;
 

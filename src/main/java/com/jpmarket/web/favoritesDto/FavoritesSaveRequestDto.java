@@ -21,11 +21,11 @@ public class FavoritesSaveRequestDto {
         this.postId = postId;
     }
 
-    public Favorites toEntity() {
-        return Favorites.builder()
-                .userId(userId)
-                .postId(postId)
-                .build();
-    }
+//    public Favorites toEntity() {
+//        return Favorites.builder()
+//                .userId(userId)
+//                .postId(postId)
+//                .build();
+//    }
 
 }

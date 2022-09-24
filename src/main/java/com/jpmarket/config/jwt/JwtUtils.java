@@ -16,13 +16,15 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
 
 @Component
-public class JwtUtils {
+public class JwtUtils implements Serializable {
+    private static final Long serialVersionUID = -2550185165626007488L;
     private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
     private static final String AUTHORITIES_KEY = "authorities";
 

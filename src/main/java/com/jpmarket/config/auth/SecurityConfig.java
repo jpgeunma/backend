@@ -112,8 +112,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .disable()
                 .httpBasic()
                 .disable()
-                .addFilterBefore(simpleCorsFilter(), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling()
                 .authenticationEntryPoint(new Http403ForbiddenEntryPoint())
                 .and()
@@ -130,30 +128,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/**/*.js")
                 .permitAll()
                 .antMatchers(HttpMethod.GET, "/api/v1/posts/**").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/v1/pictures/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/v1/pictures/**", "/api/v1/favorites/list").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/comments/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/auth/user", "/auth/registrationConfirm").permitAll()
-                .antMatchers(HttpMethod.POST, "/auth/signup", "/auth/authenticate").permitAll()
+                .antMatchers(HttpMethod.POST, "/auth/signup", "/auth/authenticate", "/api/v1/favorites").permitAll()
                 .antMatchers("/", "/error",
-                        "/auth/authenticate", "/auth/signup", "/oauth2/**", "/h2-console/**",
+                        "/auth/authenticate", "/auth/signup", "/oauth2/authorize/**", "/h2-console/**",
                         "/v2/**", "/swagger-ui.html", "/swagger-resources/**")
                 .permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()
-                .oauth2Login()
-                .authorizationEndpoint()
-                .baseUri("/oauth2/authorize")
-                .authorizationRequestRepository(new HttpCookieOAuth2AuthorizationRequestRepository())
-                .and()
-                .redirectionEndpoint()
-                .baseUri("/login/oauth2/code/**")
-                .and()
-                .userInfoEndpoint()
-                .userService(customOAuth2UserService)
-                .and()
-                .successHandler(successHandler)
-                .failureHandler(failureHandler);
+                .oauth2Login() // oauth2 login handler
+                .loginPage("/loginForm")
+                .defaultSuccessUrl("/login-success") // redirect-url after oauth2 success
+                .successHandler(successHandler)      // programmer-defined logic
+                .userInfoEndpoint()                  // 로그인이 성공하면 해당 유저의 정보를 들고 customOAuth2UserService에서 후처리를 해주겠다는 의미.
+                .userService(customOAuth2UserService);
 
     }
 

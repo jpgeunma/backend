@@ -1,8 +1,9 @@
 package com.jpmarket.web;
 
+import com.jpmarket.config.auth.dto.CustomUserDetails;
 import com.jpmarket.domain.pictures.Pictures;
-import com.jpmarket.domain.pictures.PicturesRepository;
 import com.jpmarket.service.PicturesService;
+import com.jpmarket.service.PostsService;
 import com.jpmarket.web.picturesDto.PicturesResponseDto;
 import com.jpmarket.web.picturesDto.PicturesUploadRequestDto;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,12 +31,16 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
+import static com.jpmarket.config.response.BaseResponseStatus.INVALID_JWT;
 
 @RequiredArgsConstructor
 @RestController
 public class PicturesApiController {
 
     private final PicturesService picturesService;
+    private final PostsService postsService;
 
     @Value("${com.pictures.upload.path}")
     private String uploadPath;
@@ -43,14 +49,20 @@ public class PicturesApiController {
 
 
     @PostMapping(value = "/api/v1/pictures/upload")
-    public ResponseEntity<List<PicturesResponseDto>> uploadFile(@RequestPart(value = "file") MultipartFile uploadFile,
+    public ResponseEntity<List<PicturesResponseDto>> uploadPostsFile(@AuthenticationPrincipal CustomUserDetails customUserDetails,
+                                                                @RequestPart(value = "file") MultipartFile uploadFile,
                                                                 @RequestPart(value = "requestDto") PicturesUploadRequestDto requestDto){
+        // check userId
+        Long userId = customUserDetails.getId();
+        Long postId = requestDto.getPostId();
+        if(!Objects.equals(userId, postsService.findById(postId).getUserId()))
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+
         List<PicturesResponseDto> responseDtos = new ArrayList<>();
-        Long boardId = requestDto.getBoardId();
+        Long boardId = requestDto.getPostId();
         LocalDateTime createdDateTime = LocalDateTime.now();
-
         logger.info("boardId: ", requestDto.toEntity());
-
         // check type of file
         if(uploadFile.getContentType().startsWith("image") == false) {
             return new ResponseEntity<>(new ArrayList<>(), HttpStatus.BAD_REQUEST);
@@ -65,7 +77,6 @@ public class PicturesApiController {
 
         try{
             uploadFile.transferTo(savePath);
-
             // 썸네일 생성 -> 썸네일 파일 이름은 s_로 시작
             thumbnailSaveName = uploadPath + File.separator + folderPath + File.separator + "s_" + boardId + "_" + fileName;
             File thumbnailFile = new File(thumbnailSaveName);
@@ -74,6 +85,7 @@ public class PicturesApiController {
             responseDtos.add(new PicturesResponseDto(boardId, fileName, folderPath));
         }catch (IOException e) {
             e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         requestDto.setFolderPath(folderPath);
@@ -81,7 +93,7 @@ public class PicturesApiController {
         requestDto.setOriginalFileName(fileName);
         requestDto.setSaveName(saveName);
         requestDto.setSaltedFileName(thumbnailSaveName);
-
+        requestDto.setUploadedDate(createdDateTime);
         picturesService.upload(requestDto);
 
         return new ResponseEntity<>(responseDtos, HttpStatus.OK);
@@ -141,7 +153,7 @@ public class PicturesApiController {
         // make folder
         File uploadPathFolder = new File(uploadPath, folderPath);
 
-        if(uploadPathFolder.exists() == false) {
+        if(!uploadPathFolder.exists()) {
             uploadPathFolder.mkdirs();
         }
 

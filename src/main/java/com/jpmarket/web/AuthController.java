@@ -2,16 +2,15 @@ package com.jpmarket.web;
 
 import com.jpmarket.config.auth.LoginUser;
 import com.jpmarket.config.auth.dto.CustomUserDetails;
-import com.jpmarket.config.auth.requestAndResponse.JwtAuthResponse;
-import com.jpmarket.config.auth.requestAndResponse.LoginRequest;
+import com.jpmarket.web.userDto.UserJwtAuthResponse;
+import com.jpmarket.web.userDto.UserLoginRequest;
+import com.jpmarket.config.response.BaseResponse;
+import com.jpmarket.config.response.BaseResponseStatus;
 import com.jpmarket.domain.verificationToken.VerificationToken;
 import com.jpmarket.service.UserService;
-import com.jpmarket.web.userDto.ChangePasswordDto;
-import com.jpmarket.web.userDto.GetCurrentUserDto;
-import com.jpmarket.web.userDto.SignUpRequestDto;
+import com.jpmarket.web.userDto.*;
 import com.jpmarket.config.jwt.JwtUtils;
 import com.jpmarket.domain.user.User;
-import com.jpmarket.web.userDto.UserResponseDto;
 import net.bytebuddy.utility.RandomString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +22,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -52,7 +52,7 @@ public class AuthController {
     private final String AUTHORIZATION_HEADER = "Authorization";
 
     @PostMapping(value = "/authenticate")
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody LoginRequest request
+    public ResponseEntity<?> createAuthenticationToken(@RequestBody UserLoginRequest request
             , @RequestParam(value = "rememberMe", defaultValue = "false", required = false) boolean rememberMe
             , HttpServletResponse response) throws AuthenticationException {
         logger.debug("REST request to authenticate : {}", request.getEmail());
@@ -65,7 +65,7 @@ public class AuthController {
             SecurityContextHolder.getContext().setAuthentication(authentication);
             String jwt = "Bearer " + jwtUtil.generateJwtToken(authentication, rememberMe);
             response.addHeader(AUTHORIZATION_HEADER, jwt);
-            return ResponseEntity.ok(new JwtAuthResponse(jwt));
+            return ResponseEntity.ok(new UserJwtAuthResponse(jwt));
         } catch (AuthenticationException ae) {
             logger.trace("Authentication exception trace: {}", ae);
             return new ResponseEntity<>(Collections.singletonMap("AuthenticationException",
@@ -74,6 +74,7 @@ public class AuthController {
     }
 
 
+    // TODO function for test
     @GetMapping("/user")
     @PreAuthorize("hasRole('USER')")
     public GetCurrentUserDto getCurrentUser(@LoginUser CustomUserDetails CustomUserDetails) {
@@ -155,6 +156,29 @@ public class AuthController {
         logger.info("email confirmed: " + user.getEmail());
         userService.updatePassword(user, newPassword);
         return "password changed: " + newPassword;
+    }
+
+    @PatchMapping("/modify/{id}")
+    public BaseResponse<String> modifyUserInfo(@AuthenticationPrincipal CustomUserDetails customUserDetails,
+                                               @PathVariable("id") Long id,
+                                               @RequestBody UserModifyInfoDto userInfoDto)
+    {
+        if(id == null)
+            return new BaseResponse<>(BaseResponseStatus.EMPTY_IDX);
+        if(id < 0)
+            return new BaseResponse<>(BaseResponseStatus.INVALID_IDX);
+        if(userInfoDto == null)
+            return new BaseResponse<>(BaseResponseStatus.NOT_LOGIN);
+
+        try{
+            Long userId = customUserDetails.getId();
+            if(!userId.equals(id))
+                return new BaseResponse<>(BaseResponseStatus.INVALID_USER_JWT);
+            userService.updateUser(userId, userInfoDto);
+            return new BaseResponse<>("user info changed");
+        }catch (Exception exception) {
+            return new BaseResponse<>(exception.getMessage());
+        }
     }
 
 //    @PostMapping("/changePassword")
