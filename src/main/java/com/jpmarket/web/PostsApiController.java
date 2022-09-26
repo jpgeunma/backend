@@ -4,6 +4,7 @@ import com.jpmarket.config.auth.dto.CustomUserDetails;
 import com.jpmarket.config.response.BaseResponse;
 import com.jpmarket.config.response.BaseResponseStatus;
 import com.jpmarket.service.PostsService;
+import com.jpmarket.service.UserService;
 import com.jpmarket.web.postsDto.PostsListResponseDto;
 import com.jpmarket.web.postsDto.PostsResponseDto;
 import com.jpmarket.web.postsDto.PostsSaveRequestDto;
@@ -23,10 +24,16 @@ import java.util.Objects;
 public class PostsApiController {
 
     private final PostsService postsService;
+    private final UserService userService;
 
     @PostMapping("/api/v1/posts/save")
-    public Long save(@RequestBody PostsSaveRequestDto requestDto) {
-        return postsService.save(requestDto);
+    public Long save(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody PostsSaveRequestDto requestDto) {
+        System.out.println("User who reqeust save: " + userDetails.getEmail());
+        if(!userDetails.getEmail().equals(requestDto.getEmail()))
+            return -1L;
+
+        Long userId = userService.findByEmail(userDetails.getEmail()).getId();
+        return postsService.save(requestDto, userId);
     }
 
     @PutMapping("/api/v1/posts/{id}")

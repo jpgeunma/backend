@@ -50,51 +50,57 @@ public class PicturesApiController {
 
     @PostMapping(value = "/api/v1/pictures/upload")
     public ResponseEntity<List<PicturesResponseDto>> uploadPostsFile(@AuthenticationPrincipal CustomUserDetails customUserDetails,
-                                                                @RequestPart(value = "file") MultipartFile uploadFile,
-                                                                @RequestPart(value = "requestDto") PicturesUploadRequestDto requestDto){
+                                                                @RequestPart(value = "file") MultipartFile[] uploadFiles,
+                                                                @RequestPart(value = "postId") Long requestPostId){
         // check userId
         Long userId = customUserDetails.getId();
-        Long postId = requestDto.getPostId();
+        Long postId = requestPostId;
         if(!Objects.equals(userId, postsService.findById(postId).getUserId()))
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-
-
-        List<PicturesResponseDto> responseDtos = new ArrayList<>();
-        Long boardId = requestDto.getPostId();
-        LocalDateTime createdDateTime = LocalDateTime.now();
-        logger.info("boardId: ", requestDto.toEntity());
-        // check type of file
-        if(uploadFile.getContentType().startsWith("image") == false) {
-            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.BAD_REQUEST);
-        }
-
-        String originalName = uploadFile.getOriginalFilename();
-        String fileName = originalName.substring(originalName.lastIndexOf("\\") + 1);
-        String folderPath = makeFolder(createdDateTime.toLocalDate());
-        String saveName = uploadPath + File.separator + folderPath + File.separator + boardId + "_" + fileName;
-        String thumbnailSaveName = "";
-        Path savePath = Paths.get(saveName);
-
-        try{
-            uploadFile.transferTo(savePath);
-            // 썸네일 생성 -> 썸네일 파일 이름은 s_로 시작
-            thumbnailSaveName = uploadPath + File.separator + folderPath + File.separator + "s_" + boardId + "_" + fileName;
-            File thumbnailFile = new File(thumbnailSaveName);
-            Thumbnailator.createThumbnail(savePath.toFile(), thumbnailFile, 100, 100);
-
-            responseDtos.add(new PicturesResponseDto(boardId, fileName, folderPath));
-        }catch (IOException e) {
-            e.printStackTrace();
+        if(!postsService.findById(postId).getUserId().equals(userId))
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        logger.info("boardId postId: " + postId);
+        logger.info("boardId uploadFiles: " + uploadFiles.length);
+        List<PicturesResponseDto> responseDtos = new ArrayList<>();
+        for(MultipartFile uploadFile: uploadFiles)
+        {
+            LocalDateTime createdDateTime = LocalDateTime.now();
+            logger.info("boardId name: " + uploadFile.getOriginalFilename());
+            // check type of file
+            if(uploadFile.getContentType().startsWith("image") == false) {
+                return new ResponseEntity<>(new ArrayList<>(), HttpStatus.BAD_REQUEST);
+            }
+
+            String originalName = uploadFile.getOriginalFilename();
+            String fileName = originalName.substring(originalName.lastIndexOf("\\") + 1);
+            String folderPath = makeFolder(createdDateTime.toLocalDate());
+            String saveName = uploadPath + File.separator + folderPath + File.separator + postId + "_" + fileName;
+            String thumbnailSaveName = "";
+            Path savePath = Paths.get(saveName);
+
+            try{
+                uploadFile.transferTo(savePath);
+                // 썸네일 생성 -> 썸네일 파일 이름은 s_로 시작
+                thumbnailSaveName = uploadPath + File.separator + folderPath + File.separator + "s_" + postId + "_" + fileName;
+                File thumbnailFile = new File(thumbnailSaveName);
+                Thumbnailator.createThumbnail(savePath.toFile(), thumbnailFile, 100, 100);
+
+                responseDtos.add(new PicturesResponseDto(postId, fileName, folderPath));
+            }catch (IOException e) {
+                e.printStackTrace();
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+            PicturesUploadRequestDto uploadRequestDto = PicturesUploadRequestDto.builder().build();
+            uploadRequestDto.setPostId(postId);
+            uploadRequestDto.setFolderPath(folderPath);
+            uploadRequestDto.setUploadedDate(createdDateTime);
+            uploadRequestDto.setOriginalFileName(fileName);
+            uploadRequestDto.setSaveName(saveName);
+            uploadRequestDto.setSaltedFileName(thumbnailSaveName);
+            uploadRequestDto.setUploadedDate(createdDateTime);
+            picturesService.upload(uploadRequestDto);
         }
 
-        requestDto.setFolderPath(folderPath);
-        requestDto.setUploadedDate(createdDateTime);
-        requestDto.setOriginalFileName(fileName);
-        requestDto.setSaveName(saveName);
-        requestDto.setSaltedFileName(thumbnailSaveName);
-        requestDto.setUploadedDate(createdDateTime);
-        picturesService.upload(requestDto);
 
         return new ResponseEntity<>(responseDtos, HttpStatus.OK);
     }

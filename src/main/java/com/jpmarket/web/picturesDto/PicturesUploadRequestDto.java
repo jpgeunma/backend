@@ -25,9 +25,13 @@ public class PicturesUploadRequestDto {
     private LocalDateTime uploadedDate;
 
     @Builder
-    public PicturesUploadRequestDto(Long boardId, String originalFileName) {
+    public PicturesUploadRequestDto(Long boardId, String originalFileName, String saltedFileName
+                                    , String saveName, String folderPath) {
         this.postId = boardId;
         this.originalFileName = originalFileName;
+        this.saltedFileName = saltedFileName;
+        this.saveName = saveName;
+        this.folderPath = folderPath;
     }
 
     public Pictures toEntity() {

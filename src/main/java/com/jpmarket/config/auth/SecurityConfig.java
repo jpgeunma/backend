@@ -3,6 +3,7 @@ package com.jpmarket.config.auth;
 import com.jpmarket.config.auth.dto.FailureHandler;
 import com.jpmarket.config.jwt.AuthTokenFilter;
 import com.jpmarket.config.jwt.CorsFilter;
+import com.jpmarket.domain.user.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -132,6 +133,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/api/comments/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/auth/user", "/auth/registrationConfirm").permitAll()
                 .antMatchers(HttpMethod.POST, "/auth/signup", "/auth/authenticate", "/api/v1/favorites").permitAll()
+                .antMatchers(HttpMethod.POST, "/api/v1/posts/save", "/api/v1/pictures/upload").permitAll()
                 .antMatchers("/", "/error",
                         "/auth/authenticate", "/auth/signup", "/oauth2/authorize/**", "/h2-console/**",
                         "/v2/**", "/swagger-ui.html", "/swagger-resources/**")

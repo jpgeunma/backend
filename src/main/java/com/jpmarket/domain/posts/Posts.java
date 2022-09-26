@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor
@@ -31,7 +32,7 @@ public class Posts extends BaseTimeEntity {
     private Long userId;
 
     @Column
-    private Long cost;
+    private Long price;
 
     @Column(columnDefinition = "integer default 0")
     private Long status;
@@ -60,12 +61,13 @@ public class Posts extends BaseTimeEntity {
 
     @Builder
     public Posts(Long id, String title, String content, String author, Long userId,
-                 Long location, Long category, Long buyerId) {
+                 Long location, Long price, Long category, Long buyerId) {
         this.id = id;
         this.title = title;
         this.content = content;
         this.author = author;
         this.userId = userId;
+        this.price = price;
         this.location = location;
         this.category = category;
         this.buyerId = buyerId;
