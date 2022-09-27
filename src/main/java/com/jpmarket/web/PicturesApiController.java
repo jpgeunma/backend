@@ -1,6 +1,7 @@
 package com.jpmarket.web;
 
 import com.jpmarket.config.auth.dto.CustomUserDetails;
+import com.jpmarket.config.response.BaseResponse;
 import com.jpmarket.domain.pictures.Pictures;
 import com.jpmarket.service.PicturesService;
 import com.jpmarket.service.PostsService;
@@ -33,6 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static com.jpmarket.config.response.BaseResponseStatus.FAIL;
 import static com.jpmarket.config.response.BaseResponseStatus.INVALID_JWT;
 
 @RequiredArgsConstructor
@@ -51,10 +53,9 @@ public class PicturesApiController {
     @PostMapping(value = "/api/v1/pictures/upload")
     public ResponseEntity<List<PicturesResponseDto>> uploadPostsFile(@AuthenticationPrincipal CustomUserDetails customUserDetails,
                                                                 @RequestPart(value = "file") MultipartFile[] uploadFiles,
-                                                                @RequestPart(value = "postId") Long requestPostId){
+                                                                @RequestPart(value = "postId") Long postId){
         // check userId
         Long userId = customUserDetails.getId();
-        Long postId = requestPostId;
         if(!Objects.equals(userId, postsService.findById(postId).getUserId()))
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         if(!postsService.findById(postId).getUserId().equals(userId))
@@ -62,6 +63,7 @@ public class PicturesApiController {
         logger.info("boardId postId: " + postId);
         logger.info("boardId uploadFiles: " + uploadFiles.length);
         List<PicturesResponseDto> responseDtos = new ArrayList<>();
+        Long idx = 0L;
         for(MultipartFile uploadFile: uploadFiles)
         {
             LocalDateTime createdDateTime = LocalDateTime.now();
@@ -85,13 +87,14 @@ public class PicturesApiController {
                 File thumbnailFile = new File(thumbnailSaveName);
                 Thumbnailator.createThumbnail(savePath.toFile(), thumbnailFile, 100, 100);
 
-                responseDtos.add(new PicturesResponseDto(postId, fileName, folderPath));
+                responseDtos.add(new PicturesResponseDto(postId, idx, fileName, folderPath, ""));
             }catch (IOException e) {
                 e.printStackTrace();
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
             PicturesUploadRequestDto uploadRequestDto = PicturesUploadRequestDto.builder().build();
             uploadRequestDto.setPostId(postId);
+            uploadRequestDto.setIdx(idx);
             uploadRequestDto.setFolderPath(folderPath);
             uploadRequestDto.setUploadedDate(createdDateTime);
             uploadRequestDto.setOriginalFileName(fileName);
@@ -99,12 +102,15 @@ public class PicturesApiController {
             uploadRequestDto.setSaltedFileName(thumbnailSaveName);
             uploadRequestDto.setUploadedDate(createdDateTime);
             picturesService.upload(uploadRequestDto);
+            idx += 1;
         }
 
 
         return new ResponseEntity<>(responseDtos, HttpStatus.OK);
     }
 
+    //TODO
+    // this function is for test
     @GetMapping(value = "/api/v1/pictures/test/{fileOriginName}")
     public ResponseEntity<Resource> getImageByName(@PathVariable("fileOriginName") String fileName) {
         Pictures pictures = picturesService.findByOriginalFileName(fileName);
@@ -130,11 +136,10 @@ public class PicturesApiController {
         }
     }
 
-    @GetMapping(value = "/api/v1/pictures/{boardId}")
-    public ResponseEntity<Resource> getImageByBoardId(@PathVariable Long boardId){
-        List<Pictures> pictures = picturesService.findByBoardId(boardId);
-        // TODO
-        // originally designed to send multiple images
+    @GetMapping(value = "/api/v1/pictures/thumb/{boardId}")
+    public ResponseEntity<Resource> getThumnailByBoardId(@PathVariable Long boardId){
+        List<PicturesResponseDto> pictures = picturesService.findByBoardId(boardId);
+        // TODO 섬네일 미적용 상태
         String storedFolderPath = pictures.get(0).getStoredFolderPath();
         try{
             FileSystemResource resource = new FileSystemResource(storedFolderPath);
@@ -150,7 +155,19 @@ public class PicturesApiController {
             return null;
         }
     }
+    @GetMapping(value = "/api/v1/pictures/{boardId}")
+    public BaseResponse<List<PicturesResponseDto>> getImagesByBoardId(@PathVariable Long boardId) {
 
+
+        try{
+            List<PicturesResponseDto> pictures = picturesService.findByBoardId(boardId);
+            return new BaseResponse<>(pictures);
+        }catch (Exception exception)
+        {
+            System.out.println(exception);
+            return new BaseResponse<>(FAIL);
+        }
+    }
     private String makeFolder(LocalDate localDate) {
         String str = localDate.format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
 

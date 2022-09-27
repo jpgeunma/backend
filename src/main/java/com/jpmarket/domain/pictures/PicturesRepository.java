@@ -1,5 +1,6 @@
 package com.jpmarket.domain.pictures;
 
+import com.jpmarket.web.picturesDto.PicturesResponseDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

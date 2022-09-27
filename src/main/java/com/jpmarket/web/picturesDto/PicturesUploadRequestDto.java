@@ -13,6 +13,8 @@ import java.time.LocalDateTime;
 public class PicturesUploadRequestDto {
 
     private Long id;
+
+    private Long idx;
     private Long postId;
 
     private String originalFileName;
@@ -25,9 +27,10 @@ public class PicturesUploadRequestDto {
     private LocalDateTime uploadedDate;
 
     @Builder
-    public PicturesUploadRequestDto(Long boardId, String originalFileName, String saltedFileName
+    public PicturesUploadRequestDto(Long boardId, Long idx, String originalFileName, String saltedFileName
                                     , String saveName, String folderPath) {
         this.postId = boardId;
+        this.idx = idx;
         this.originalFileName = originalFileName;
         this.saltedFileName = saltedFileName;
         this.saveName = saveName;
@@ -37,6 +40,7 @@ public class PicturesUploadRequestDto {
     public Pictures toEntity() {
         return Pictures.builder()
                 .boardId(postId)
+                .idx(idx)
                 .originalFileName(originalFileName)
                 .saltedFileName(saltedFileName)
                 .savedFileName(saveName)

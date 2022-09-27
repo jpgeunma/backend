@@ -2,12 +2,15 @@ package com.jpmarket.service;
 
 import com.jpmarket.domain.pictures.Pictures;
 import com.jpmarket.domain.pictures.PicturesRepository;
+import com.jpmarket.web.picturesDto.PicturesResponseDto;
 import com.jpmarket.web.picturesDto.PicturesUploadRequestDto;
+import com.jpmarket.web.postsDto.PostsListResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -26,7 +29,9 @@ public class PicturesService {
     }
 
     @Transactional
-    public List<Pictures> findByBoardId(Long boardId) {
-        return picturesRepository.findallByBoardId(boardId);
+    public List<PicturesResponseDto> findByBoardId(Long boardId) {
+        return picturesRepository.findallByBoardId(boardId).
+                stream().map(PicturesResponseDto::new)
+                .collect(Collectors.toList());
     }
 }
