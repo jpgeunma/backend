@@ -11,7 +11,7 @@ public class FavoritesListResponseDto {
     private Long postId;
 
     public FavoritesListResponseDto(Favorites entity) {
-        this.userId = entity.getUserId();
-        this.postId = entity.getPostId();
+        this.userId = entity.getUser().getId();
+        this.postId = entity.getPosts().getId();
     }
 }

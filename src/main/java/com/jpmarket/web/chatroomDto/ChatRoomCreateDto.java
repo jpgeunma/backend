@@ -19,10 +19,10 @@ public class ChatRoomCreateDto {
         this.buyerId = buyerId;
     }
 
-    public ChatRoom toEntity() {
-        return ChatRoom.builder()
-                .sellerId(sellerId)
-                .buyerId(buyerId)
-                .build();
-    }
+//    public ChatRoom toEntity() {
+//        return ChatRoom.builder()
+//                .sellerId(sellerId)
+//                .buyerId(buyerId)
+//                .build();
+//    }
 }

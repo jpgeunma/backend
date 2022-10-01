@@ -19,7 +19,11 @@ public class Pictures extends BaseTimeEntity {
     private Long id;
 
     @Column(nullable = false)
+    private Long idx;
+    @Column(nullable = false)
     private Long boardId;
+
+    private Long boardCategory;
 
     @Column(nullable = false)
     private String originalFileName;
@@ -33,8 +37,9 @@ public class Pictures extends BaseTimeEntity {
 
 
     @Builder
-    public Pictures (Long boardId, String originalFileName, String storedFolderPath) {
+    public Pictures (Long boardId, Long idx, String originalFileName, String storedFolderPath) {
         this.boardId = boardId;
+        this.idx = idx;
         this.originalFileName = originalFileName;
         this.storedFolderPath = storedFolderPath;
     }

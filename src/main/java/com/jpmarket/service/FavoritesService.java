@@ -2,6 +2,8 @@ package com.jpmarket.service;
 
 import com.jpmarket.domain.favorites.Favorites;
 import com.jpmarket.domain.favorites.FavoritesRepository;
+import com.jpmarket.domain.posts.Posts;
+import com.jpmarket.domain.user.User;
 import com.jpmarket.web.favoritesDto.FavoritesListResponseDto;
 import com.jpmarket.web.favoritesDto.FavoritesSaveRequestDto;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -18,9 +21,15 @@ public class FavoritesService {
     private final FavoritesRepository favoritesRepository;
 
     @Transactional
-    public Long save(FavoritesSaveRequestDto requestDto)
+    public Long save(User user, Posts posts)
     {
-        return favoritesRepository.save(requestDto.toEntity()).getId();
+        Favorites favorites = Favorites.builder()
+                .user(user)
+                .posts(posts)
+                .build();
+        if(favoritesRepository.findByUserAndPosts(user, posts).isPresent())
+            return favoritesRepository.deleteFavoritesByUserAndPosts(user, posts);
+        return favoritesRepository.save(favorites).getId();
     }
 
 
@@ -43,4 +52,18 @@ public class FavoritesService {
         return favoritesRepository.findAllLengthByUserId(userId);
     }
 
+    @Transactional
+    public Optional<Favorites> findByUserIdAndPostId(User user, Posts posts)
+    {
+        return favoritesRepository.findByUserAndPosts(user, posts);
+    }
+    @Transactional
+    public void delete(User user, Posts posts)
+    {
+        Favorites favorites = Favorites.builder()
+                .posts(posts)
+                .user(user)
+                .build();
+        favoritesRepository.delete(favorites);
+    }
 }

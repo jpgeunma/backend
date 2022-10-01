@@ -1,5 +1,6 @@
 package com.jpmarket.web.picturesDto;
 
+import com.jpmarket.domain.BaseTimeEntity;
 import com.jpmarket.domain.pictures.Pictures;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,13 +15,17 @@ public class PicturesResponseDto {
 
     private Long boardId;
 
+    private Long idx;
     private String fileName;
 
-    private String folderPath;
+    private String storedFolderPath;
+
+    private String saltedFileName;
+
 
     public String getImageURL() {
         try{
-            return URLEncoder.encode(folderPath + "/" + boardId + fileName, "UTF-8");
+            return URLEncoder.encode(storedFolderPath + "/" + boardId + fileName, "UTF-8");
 
         }catch (UnsupportedEncodingException e) {
             e.printStackTrace();
@@ -28,6 +33,22 @@ public class PicturesResponseDto {
         return "";
     }
 
-
+    public PicturesResponseDto(Pictures pictures)
+    {
+        this.idx = pictures.getIdx();
+        this.boardId = pictures.getBoardId();
+        this.fileName = pictures.getOriginalFileName();
+        this.storedFolderPath = pictures.getStoredFolderPath();
+        this.saltedFileName = pictures.getSaltedFileName();
+    }
+    public Pictures toEntity() {
+        return Pictures.builder()
+                .boardId(boardId)
+                .idx(idx)
+                .originalFileName(fileName)
+                .storedFolderPath(storedFolderPath)
+                .saltedFileName(saltedFileName)
+                .build();
+    }
 
 }

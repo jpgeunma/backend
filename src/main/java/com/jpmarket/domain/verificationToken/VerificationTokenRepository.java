@@ -1,5 +1,6 @@
 package com.jpmarket.domain.verificationToken;
 
+import com.jpmarket.domain.user.Role;
 import com.jpmarket.domain.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -18,4 +19,6 @@ public interface VerificationTokenRepository extends JpaRepository<VerificationT
     @Modifying
     @Query("DELETE FROM VerificationToken u WHERE u.user = ?1")
     void deleteByUser(User user);
+
+
 }

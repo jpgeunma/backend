@@ -19,8 +19,8 @@ public class PostsService {
     private final PostsRepository postsRepository;
 
     @Transactional
-    public Long save(PostsSaveRequestDto requestDto) {
-        return postsRepository.save(requestDto.toEntity()).getId();
+    public Long save(PostsSaveRequestDto requestDto, Long userId) {
+        return postsRepository.save(requestDto.toEntity(userId)).getId();
     }
 
     @Transactional
@@ -45,8 +45,7 @@ public class PostsService {
     public PostsResponseDto findById (Long id) {
         Posts entity = postsRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 업습니다. id=" + id));
-
-                return new PostsResponseDto(entity);
+        return new PostsResponseDto(entity);
     }
 
     @Transactional(readOnly = true)
@@ -60,5 +59,10 @@ public class PostsService {
         return postsRepository.findallDesc().stream()
                 .map(PostsListResponseDto::new)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public Integer updateView(Long id) {
+        return postsRepository.updateView(id);
     }
 }

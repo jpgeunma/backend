@@ -1,6 +1,6 @@
 package com.jpmarket.web.chatroomDto.messagesDto;
 
-import com.jpmarket.domain.chatroom.messages.Messages;
+import com.jpmarket.domain.chatroom.message.Message;
 import lombok.Getter;
 
 @Getter
@@ -12,9 +12,9 @@ public class MessagesResponseDto {
 
     private String message;
 
-    public MessagesResponseDto(Messages entity) {
-        this.id = entity.getRoomId();
-        this.sender = entity.getSender();
-        this.message = entity.getContent();
-    }
+//    public MessagesResponseDto(Message entity) {
+//        this.id = entity.getRoomId();
+//        this.sender = entity.getSender();
+//        this.message = entity.getContent();
+//    }
 }

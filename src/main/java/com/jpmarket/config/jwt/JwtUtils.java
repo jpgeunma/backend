@@ -14,17 +14,17 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
 
 @Component
-public class JwtUtils {
+public class JwtUtils implements Serializable {
+    private static final Long serialVersionUID = -2550185165626007488L;
     private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
     private static final String AUTHORITIES_KEY = "authorities";
 
@@ -48,25 +48,25 @@ public class JwtUtils {
                 .withClaim("name", user.getName())
                 .sign(Algorithm.HMAC512(jwtScret));
     }
-        public String generateJwtToken(Authentication authentication) {
-            return generateJwtToken(authentication, false);
-        }
+    public String generateJwtToken(Authentication authentication) {
+        return generateJwtToken(authentication, false);
+    }
 
-        public String generateJwtToken(Authentication authentication, boolean rememberMe) {
+    public String generateJwtToken(Authentication authentication, boolean rememberMe) {
 
-        String authorities = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(","));
+    String authorities = authentication.getAuthorities().stream()
+            .map(GrantedAuthority::getAuthority)
+            .collect(Collectors.joining(","));
 
-        Long now = (Long)(new Date()).getTime();
-        Date validity;
-        if (rememberMe) {
-            validity = new Date(now + 10 * jwtExpirationMs);
-        } else {
-            validity = new Date(now + jwtExpirationMs);
-        }
+    Long now = (Long)(new Date()).getTime();
+    Date validity;
+    if (rememberMe) {
+        validity = new Date(now + 10 * jwtExpirationMs);
+    } else {
+        validity = new Date(now + jwtExpirationMs);
+    }
 
-        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+    CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
 //        return JWT.create()
 //                .withSubject(Long.toString(customUserDetails.getId()))
 //                .withSubject(customUserDetails.getEmail())
@@ -74,14 +74,14 @@ public class JwtUtils {
 //                .withExpiresAt(validity)
 //                .withClaim(AUTHORITIES_KEY, authorities)
 //                .sign(Algorithm.HMAC512(jwtKey));
-            return Jwts.builder()
-                    .setId(customUserDetails.getId().toString())
-                    .setSubject(customUserDetails.getEmail())
-                    .setIssuedAt(new Date())
-                    .claim(AUTHORITIES_KEY, authorities)
-                    .signWith(SignatureAlgorithm.HS512, jwtKey)
-                    .setExpiration(validity)
-                    .compact();
+        return Jwts.builder()
+                .setId(customUserDetails.getId().toString())
+                .setSubject(customUserDetails.getEmail())
+                .setIssuedAt(new Date())
+                .claim(AUTHORITIES_KEY, authorities)
+                .signWith(SignatureAlgorithm.HS512, jwtKey)
+                .setExpiration(validity)
+                .compact();
     }
     public String getUserNameFromJwtToken(String token) {
         return  Jwts.parserBuilder().setSigningKey(jwtKey).build().parseClaimsJwt(token).getBody().getSubject();

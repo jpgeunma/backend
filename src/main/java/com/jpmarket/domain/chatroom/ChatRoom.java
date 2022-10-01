@@ -1,16 +1,13 @@
 package com.jpmarket.domain.chatroom;
 
 import com.jpmarket.domain.BaseTimeEntity;
+import com.jpmarket.domain.chatroom.message.Message;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.springframework.web.socket.WebSocketSession;
 
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Getter
 @NoArgsConstructor
@@ -18,22 +15,18 @@ import java.util.Set;
 public class ChatRoom extends BaseTimeEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(nullable = false)
-    private Long sellerId;
-    @Column(nullable = false)
-    private Long buyerId;
 
     @Column
-    private String roomName;
+    private String title;
 
-    @Builder
-    public ChatRoom(Long sellerId, Long buyerId)
-    {
-        this.sellerId = sellerId;
-        this.buyerId = buyerId;
-    }
+    @Column
+    private Long sellerId;
+
+    @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)
+    private List<Message> messages = new ArrayList<>();
+
 
 }

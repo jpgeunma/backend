@@ -6,24 +6,21 @@ import com.jpmarket.domain.user.User;
 import com.jpmarket.domain.user.UserRepository;
 import com.jpmarket.domain.verificationToken.VerificationToken;
 import com.jpmarket.domain.verificationToken.VerificationTokenRepository;
-import com.jpmarket.web.userDto.SignUpRequest;
+import com.jpmarket.web.userDto.UserModifyInfoDto;
+import com.jpmarket.web.userDto.SignUpRequestDto;
 import com.jpmarket.web.userDto.UserResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.thymeleaf.context.Context;
 
-import javax.validation.Valid;
 import java.util.UUID;
 import java.util.logging.Logger;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional
 @Slf4j
 public class UserService {
     private final UserRepository userRepository;
@@ -38,21 +35,30 @@ public class UserService {
     // multiple signup reqeust with same email and password can be registered!!!!
     // need to be fix
     @Transactional
-    public User processNewAccount(@Valid SignUpRequest signUpRequest) {
-        User newUser = getNewUserModel(signUpRequest);
-        System.out.println("---------------------------------------------test");
-        sendSignUpConfirmEmail(newUser);
-        return newUser;
-    }
+    public User processNewAccount(SignUpRequestDto signUpRequestDto) {
+        User user = userRepository.findByEmail(signUpRequestDto.getEmail()).get();
+        try{
+            User newUser = registerNewUserAccount(signUpRequestDto);
+            sendSignUpConfirmEmail(newUser);
+            return newUser;
+        }catch (Exception e)
+        {
+            logger.info("double commit with same email address");
+            return null;
+        }
 
-    private User getNewUserModel(@Valid SignUpRequest signUpRequest) {
-        signUpRequest.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
+    }
+    private User registerNewUserAccount(SignUpRequestDto signUpRequestDto) throws IllegalAccessException {
+        signUpRequestDto.setPassword(passwordEncoder.encode(signUpRequestDto.getPassword()));
+        if(userRepository.findByEmail(signUpRequestDto.getEmail()).isPresent())
+                throw new IllegalAccessException("There is an account with that email address");
         User user = User.builder()
-                .email(signUpRequest.getEmail())
-                .name(signUpRequest.getName())
+                .email(signUpRequestDto.getEmail())
+                .name(signUpRequestDto.getName())
                 .role(Role.GUEST)
                 .build();
-        user.setPassword(signUpRequest.getPassword());
+        user.setPassword(signUpRequestDto.getPassword());
+        userRepository.save(user);
         return user;
     }
 
@@ -70,15 +76,40 @@ public class UserService {
                 .subject(subject)
                 .message(confirmationURL)
                 .build();
-
         emailService.sendHtmlEmail(emailMessage);
     }
 
+    @Transactional
+    public void sendResetPasswordEmail(User newUser) {
+        String token = UUID.randomUUID().toString();
+        createVerificationToken(newUser, token);
+
+        String recipientAddress = newUser.getEmail();
+        String subject = "jp marget, account check Registration Confirmation";
+        String confirmationURL = "http://localhost:8080/auth/reset?token=" + token;
+
+        EmailMessage emailMessage = EmailMessage.builder()
+                .to(recipientAddress)
+                .subject(subject)
+                .message(confirmationURL)
+                .build();
+        emailService.sendHtmlEmail(emailMessage);
+    }
     @Transactional
     public void updatePassword(User user, String newPassword) {
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
     }
+
+    @Transactional
+    public void updateUser(Long userId, UserModifyInfoDto userModifyInfoDto)
+    {
+        User user = userRepository.findById(userId)
+                .orElseThrow(()->new IllegalArgumentException("해당 게시글이 없습니다. id="));
+        user.setName(userModifyInfoDto.getNickname());
+        userRepository.save(user);
+    }
+
 
     @Transactional(readOnly = true)
     public UserResponseDto findById(Long id) {
@@ -94,7 +125,7 @@ public class UserService {
         return new UserResponseDto(entity);
     }
 
-    private void createVerificationToken(User user, String token) {
+    public void createVerificationToken(User user, String token) {
         if(tokenRepository.findByEmail(user.getEmail()).isPresent())
         {
             return;
@@ -115,6 +146,11 @@ public class UserService {
         return tokenRepository.findByToken(verificationToken.getToken())
                 .orElseThrow(() -> new IllegalArgumentException("no such user"))
                 .getUser();
+    }
+
+    public void deleteVerificationTokenByUser(User user)
+    {
+        tokenRepository.deleteByUser(user);
     }
 
     public boolean checkExistByEmail(String email) {

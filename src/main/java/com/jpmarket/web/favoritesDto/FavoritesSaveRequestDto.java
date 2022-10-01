@@ -10,22 +10,19 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class FavoritesSaveRequestDto {
 
-    private Long userId;
-
     private Long postId;
 
     @Builder
     public FavoritesSaveRequestDto(Long userId, Long postId)
     {
-        this.userId = userId;
         this.postId = postId;
     }
 
-    public Favorites toEntity() {
-        return Favorites.builder()
-                .userId(userId)
-                .postId(postId)
-                .build();
-    }
+//    public Favorites toEntity() {
+//        return Favorites.builder()
+//                .userId(userId)
+//                .postId(postId)
+//                .build();
+//    }
 
 }

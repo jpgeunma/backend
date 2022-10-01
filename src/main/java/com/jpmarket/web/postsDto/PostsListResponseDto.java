@@ -13,9 +13,10 @@ public class PostsListResponseDto {
 
     private String content; // TODO 테스트 용 코드 나중에 미리보기용으로 만든 Dto임으로 삭제
                             // 그리고 view횟수 추가
-    private Long cost;
-    private LocalDateTime modifiedDate;
+    private Long price;
 
+    private Long status;
+    private Long viewed;
     private Long commentsNum;
 
     private Long favoritesNum;
@@ -25,8 +26,9 @@ public class PostsListResponseDto {
         this.title = entity.getTitle();
         this.author = entity.getAuthor();
         this.content = entity.getContent();
-        this.cost = entity.getCost();
-        this.modifiedDate = entity.getModifiedDate();
+        this.price = entity.getPrice();
+        this.status = entity.getStatus();
+        this.viewed = entity.getViewed();
         this.commentsNum = entity.getCommentsNum();
         this.favoritesNum = entity.getFavoritesNum();
     }

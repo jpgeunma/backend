@@ -1,6 +1,8 @@
 package com.jpmarket.domain.favorites;
 
 import com.jpmarket.domain.BaseTimeEntity;
+import com.jpmarket.domain.posts.Posts;
+import com.jpmarket.domain.user.User;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,16 +18,18 @@ public class Favorites extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
-    private Long userId;
+    @OneToOne(targetEntity = User.class, fetch = FetchType.EAGER, cascade = CascadeType.DETACH)
+    @JoinColumn(nullable = false, name = "user_id")
+    private User user;
 
-    @Column
-    private Long postId;
+    @OneToOne(targetEntity = Posts.class, fetch = FetchType.EAGER, cascade = CascadeType.DETACH)
+    @JoinColumn(nullable = false, name = "posts_id")
+    private Posts posts;
 
     @Builder
-    public Favorites(Long userId, Long postId)
+    public Favorites(User user, Posts posts)
     {
-        this.userId = userId;
-        this.postId = postId;
+        this.user = user;
+        this.posts = posts;
     }
 }

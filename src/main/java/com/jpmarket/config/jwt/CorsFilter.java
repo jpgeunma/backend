@@ -1,7 +1,5 @@
 package com.jpmarket.config.jwt;
 
-import org.springframework.stereotype.Component;
-
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -28,7 +26,6 @@ public class CorsFilter implements Filter {
             res.setStatus(HttpServletResponse.SC_OK);
             return;
         }
-        System.out.println("chain.doFilter" );
         chain.doFilter(request, response);
     }
 

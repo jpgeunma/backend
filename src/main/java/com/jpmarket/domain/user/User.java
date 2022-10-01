@@ -24,7 +24,7 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
 
     @Column
@@ -45,7 +45,8 @@ public class User extends BaseTimeEntity {
     private boolean emailVerified;
 
     @Builder
-    public User(String name, String email, String picture, Role role) {
+    public User(Long id, String name, String email, String picture, Role role) {
+        this.id = id;
         this.name = name;
         this.email = email;
         this.picture = picture;
@@ -53,7 +54,8 @@ public class User extends BaseTimeEntity {
     }
 
     @Builder
-    public User(String name, String email, String password, String picture, Role role) {
+    public User(Long id, String name, String email, String password, String picture, Role role) {
+        this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
@@ -76,6 +78,12 @@ public class User extends BaseTimeEntity {
     public User setPassword(String password)
     {
         this.password = password;
+        return this;
+    }
+
+    public User setName(String name)
+    {
+        this.name = name;
         return this;
     }
 
