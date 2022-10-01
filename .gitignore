@@ -3,3 +3,5 @@ application-jwt.properties
 application-mail.properties
 /src/main/resources/testImages
 application.yml
+/bin
+/build
