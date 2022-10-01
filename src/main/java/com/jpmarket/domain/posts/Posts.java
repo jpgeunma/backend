@@ -3,6 +3,7 @@ import com.jpmarket.domain.BaseTimeEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -49,19 +50,19 @@ public class Posts extends BaseTimeEntity {
 //    @Column
 //    private Location
 //    //TODO 구글맵 장소 추가
-
-    @Column(columnDefinition = "BIGINT default 0")
+    @ColumnDefault("0")
     private Long viewed;
 
-    @Column(columnDefinition = "BIGINT default 0")
+    @ColumnDefault("0")
     private Long commentsNum;
 
-    @Column(columnDefinition = "BIGINT default 0")
+    @ColumnDefault("0")
     private Long favoritesNum;
 
     @Builder
     public Posts(Long id, String title, String content, String author, Long userId,
-                 Long location, Long price, Long category, Long buyerId) {
+                 Long location, Long price, Long category, Long buyerId, Long status,
+                 Long viewd, Long commentsNum, Long favoritesNum) {
         this.id = id;
         this.title = title;
         this.content = content;
@@ -71,6 +72,10 @@ public class Posts extends BaseTimeEntity {
         this.location = location;
         this.category = category;
         this.buyerId = buyerId;
+        this.status = status;
+        this.viewed = viewd;
+        this.commentsNum = commentsNum;
+        this.favoritesNum = favoritesNum;
     }
 
     public void update(String title, String content) {

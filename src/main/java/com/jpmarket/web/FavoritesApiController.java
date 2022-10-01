@@ -38,6 +38,7 @@ public class FavoritesApiController {
             System.out.println("user id is not same");
             return 0L;
         }
+        postsService.addFavoritesNum(posts.getId());
         return favoritesService.save(user, posts);
     }
 
@@ -54,6 +55,7 @@ public class FavoritesApiController {
     public void delete(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable Long postId) {
         User user = userService.findById(userDetails.getId()).toEntity();
         Posts posts = postsService.findById(postId).toEntity();
+        postsService.deleteFavoritesNum(postId);
         favoritesService.delete(user, posts);
     }
 

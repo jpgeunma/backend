@@ -65,4 +65,30 @@ public class PostsService {
     public Integer updateView(Long id) {
         return postsRepository.updateView(id);
     }
+
+    @Transactional
+    public Integer addFavoritesNum(Long id) {
+        return postsRepository.addFavoritesNum(id);
+    }
+
+    @Transactional
+    public Integer deleteFavoritesNum(Long id) {
+        if(postsRepository.findById(id).get().getFavoritesNum() > 0)
+            return postsRepository.deleteFavoritesNum(id);
+        return -1;
+    }
+
+    @Transactional
+    public List<PostsListResponseDto> findSearchPosts(String word)
+    {
+        try{
+            List<PostsListResponseDto> responseDtos = postsRepository.findSearchPosts(word).stream()
+                    .map(PostsListResponseDto::new)
+                    .collect(Collectors.toList());
+            return responseDtos;
+        }catch(Exception exception){
+            System.out.println(exception.getMessage());
+            return null;
+        }
+    }
 }

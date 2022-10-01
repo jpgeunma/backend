@@ -15,4 +15,16 @@ public interface PostsRepository extends JpaRepository<Posts, Long>{
     @Modifying
     @Query("UPDATE Posts p SET p.viewed = p.viewed + 1 where p.id = ?1")
     Integer updateView(Long id);
+
+
+    @Modifying
+    @Query("UPDATE Posts p SET p.favoritesNum = p.favoritesNum + 1 where p.id = ?1")
+    Integer addFavoritesNum(Long id);
+
+    @Modifying
+    @Query("UPDATE Posts p SET p.favoritesNum = p.favoritesNum - 1 where p.id = ?1")
+    Integer deleteFavoritesNum(Long id);
+
+    @Query("SELECT p FROM Posts p WHERE p.title LIKE %?1% ORDER BY p.createdDate DESC")
+    List<Posts> findSearchPosts(String word);
 }

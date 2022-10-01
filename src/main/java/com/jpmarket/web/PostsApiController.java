@@ -88,4 +88,33 @@ public class PostsApiController {
         return postsService.findById(id);
     }
 
+    @GetMapping("/api/v1/posts/search")
+    public ResponseEntity<List<PostsListResponseDto>> searchProducts(String word,
+                                                                     @RequestParam(required = false, defaultValue = "0") Integer isDelFree,
+                                                                     @RequestParam(required = false, defaultValue = "-1") Integer gte,
+                                                                     @RequestParam(required = false, defaultValue = "-1") Integer lte)
+    {
+        if (word.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        try {
+            if (word == null) {
+                System.out.println("EMPTY_IDX");
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+
+            if (word == " ") {
+                System.out.println("EMPTY_IDX");
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+
+            System.out.println("word: " + word);
+            List<PostsListResponseDto> postsListResponseDtos = postsService.findSearchPosts(word);
+            return new ResponseEntity<>(postsListResponseDtos, HttpStatus.OK);
+        } catch (Exception exception) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
 }

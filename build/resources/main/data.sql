@@ -109,25 +109,25 @@ INSERT INTO Posts (title, content, author) VALUES
     , '<p>"On the other hand, we denounce with righteous indignation and dislike men who are so beguiled and demoralized by the charms of pleasure of the moment, so blinded by desire, that they cannot foresee the pain and trouble that are bound to ensue; and equal blame belongs to those who fail in their duty through weakness of will, which is the same as saying through shrinking from toil and pain. These cases are perfectly simple and easy to distinguish. In a free hour, when our power of choice is untrammelled and when nothing prevents our being able to do what we like best, every pleasure is to be welcomed and every pain avoided. But in certain circumstances and owing to the claims of duty or the obligations of business it will frequently occur that pleasures have to be repudiated and annoyances accepted. The wise man therefore always holds in these matters to this principle of selection: he rejects pleasures to secure other greater pleasures, or else he endures pains to avoid worse pains."</p>'
     ,  'keumtae.kim');
 
-INSERT INTO Pictures (id, board_id, idx, original_file_name, stored_folder_path) VALUES
-    ( 1, 1, 1, '1.jpg', 'src/main/resources/testImages/upload/2022/09/17/1.jpg' );
-INSERT INTO Pictures (id, board_id, idx, original_file_name, stored_folder_path) VALUES
-    ( 9, 1, 2, '9.jpg', 'src/main/resources/testImages/upload/2022/09/26/24_fb-logo.png' );
+INSERT INTO Pictures (id, board_id, idx, original_file_name, saved_file_name, salted_file_name, stored_folder_path) VALUES
+    ( 1, 1, 1, '1.jpg', 'src/main/resources/testImages/upload/2022/09/17/1.jpg', 'src/main/resources/testImages/upload/2022/09/17/s_1.jpg', 'src/main/resources/testImages/upload/2022/09/17/' );
+INSERT INTO Pictures (id, board_id, idx, original_file_name, saved_file_name, salted_file_name, stored_folder_path) VALUES
+    ( 9, 1, 2, '9.jpg', 'src/main/resources/testImages/upload/2022/09/26/24_fb-logo.png', 'src/main/resources/testImages/upload/2022/09/26/24_fb-logo.png', 'src/main/resources/testImages/upload/2022/09/26/');
 
-INSERT INTO Pictures (id, board_id, idx, original_file_name, stored_folder_path) VALUES
-    ( 2, 2, 1, '2.jpg', 'src/main/resources/testImages/upload/2022/09/17/2.jpg' );
-INSERT INTO Pictures (id, board_id, idx, original_file_name, stored_folder_path) VALUES
-    ( 3, 3, 1, '3.jpg', 'src/main/resources/testImages/upload/2022/09/17/4.jpg' );
-INSERT INTO Pictures (id, board_id, idx, original_file_name, stored_folder_path) VALUES
-    ( 4, 4, 1, '4.jpg', 'src/main/resources/testImages/upload/2022/09/17/4.jpg' );
-INSERT INTO Pictures (id, board_id, idx, original_file_name, stored_folder_path) VALUES
-    ( 5, 5, 1, '5.jpg', 'src/main/resources/testImages/upload/2022/09/17/5.jpg' );
-INSERT INTO Pictures (id, board_id, idx, original_file_name, stored_folder_path) VALUES
-    ( 6, 6, 1, '6.jpg', 'src/main/resources/testImages/upload/2022/09/17/6.jpg' );
-INSERT INTO Pictures (id, board_id, idx, original_file_name, stored_folder_path) VALUES
-    ( 7, 7, 1, '7.jpg', 'src/main/resources/testImages/upload/2022/09/17/7.jpg' );
-INSERT INTO Pictures (id, board_id, idx, original_file_name, stored_folder_path) VALUES
-    ( 8, 8, 1,'8.png', 'src/main/resources/testImages/upload/2022/09/17/8.png' );
+INSERT INTO Pictures (id, board_id, idx, original_file_name, saved_file_name, salted_file_name, stored_folder_path) VALUES
+    ( 2, 2, 1, '2.jpg', 'src/main/resources/testImages/upload/2022/09/17/2.jpg', 'src/main/resources/testImages/upload/2022/09/17/s_2.jpg', 'src/main/resources/testImages/upload/2022/09/17/' );
+INSERT INTO Pictures (id, board_id, idx, original_file_name, saved_file_name, salted_file_name, stored_folder_path) VALUES
+    ( 3, 3, 1, '3.jpg', 'src/main/resources/testImages/upload/2022/09/17/4.jpg', 'src/main/resources/testImages/upload/2022/09/17/s_4.jpg', 'src/main/resources/testImages/upload/2022/09/17/' );
+INSERT INTO Pictures (id, board_id, idx, original_file_name, saved_file_name, salted_file_name, stored_folder_path) VALUES
+    ( 4, 4, 1, '4.jpg', 'src/main/resources/testImages/upload/2022/09/17/4.jpg', 'src/main/resources/testImages/upload/2022/09/17/s_4.jpg', 'src/main/resources/testImages/upload/2022/09/17/' );
+INSERT INTO Pictures (id, board_id, idx, original_file_name, saved_file_name, salted_file_name, stored_folder_path) VALUES
+    ( 5, 5, 1, '5.jpg', 'src/main/resources/testImages/upload/2022/09/17/5.jpg' , 'src/main/resources/testImages/upload/2022/09/17/s_5.jpg', 'src/main/resources/testImages/upload/2022/09/17/' );
+INSERT INTO Pictures (id, board_id, idx, original_file_name, saved_file_name, salted_file_name, stored_folder_path) VALUES
+    ( 6, 6, 1, '6.jpg', 'src/main/resources/testImages/upload/2022/09/17/6.jpg', 'src/main/resources/testImages/upload/2022/09/17/s_6.jpg', 'src/main/resources/testImages/upload/2022/09/17/' );
+INSERT INTO Pictures (id, board_id, idx, original_file_name, saved_file_name, salted_file_name, stored_folder_path) VALUES
+    ( 7, 7, 1, '7.jpg', 'src/main/resources/testImages/upload/2022/09/17/7.jpg', 'src/main/resources/testImages/upload/2022/09/17/s_7.jpg', 'src/main/resources/testImages/upload/2022/09/17/' );
+INSERT INTO Pictures (id, board_id, idx, original_file_name, saved_file_name, salted_file_name, stored_folder_path) VALUES
+    ( 8, 8, 1,'8.png', 'src/main/resources/testImages/upload/2022/09/17/8.png', 'src/main/resources/testImages/upload/2022/09/17/s_8.png', 'src/main/resources/testImages/upload/2022/09/17/' );
 
 -- INSERT INTO CHATROOM (id, seller_id, buyer_id) VALUES
 --     (1, 1, 2);

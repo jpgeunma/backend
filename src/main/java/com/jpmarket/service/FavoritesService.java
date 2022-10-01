@@ -60,10 +60,6 @@ public class FavoritesService {
     @Transactional
     public void delete(User user, Posts posts)
     {
-        Favorites favorites = Favorites.builder()
-                .posts(posts)
-                .user(user)
-                .build();
-        favoritesRepository.delete(favorites);
+        favoritesRepository.deleteFavoritesByUserAndPosts(user, posts);
     }
 }

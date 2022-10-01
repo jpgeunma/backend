@@ -35,6 +35,9 @@ public class PostsSaveRequestDto {
                 .price(price)
                 .location(location)
                 .userId(userId)
+                .favoritesNum(0L)
+                .viewd(0L)
+                .commentsNum(0L)
                 .build();
     }
 

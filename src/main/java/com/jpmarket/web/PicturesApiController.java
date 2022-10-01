@@ -85,7 +85,7 @@ public class PicturesApiController {
                 // 썸네일 생성 -> 썸네일 파일 이름은 s_로 시작
                 thumbnailSaveName = uploadPath + File.separator + folderPath + File.separator + "s_" + postId + "_" + fileName;
                 File thumbnailFile = new File(thumbnailSaveName);
-                Thumbnailator.createThumbnail(savePath.toFile(), thumbnailFile, 100, 100);
+                Thumbnailator.createThumbnail(savePath.toFile(), thumbnailFile, 181, 200);
 
                 responseDtos.add(new PicturesResponseDto(postId, idx, fileName, folderPath, ""));
             }catch (IOException e) {
@@ -95,7 +95,7 @@ public class PicturesApiController {
             PicturesUploadRequestDto uploadRequestDto = PicturesUploadRequestDto.builder().build();
             uploadRequestDto.setPostId(postId);
             uploadRequestDto.setIdx(idx);
-            uploadRequestDto.setFolderPath(folderPath);
+            uploadRequestDto.setFolderPath(uploadPath + File.separator + folderPath + File.separator);
             uploadRequestDto.setUploadedDate(createdDateTime);
             uploadRequestDto.setOriginalFileName(fileName);
             uploadRequestDto.setSaveName(saveName);
@@ -114,7 +114,7 @@ public class PicturesApiController {
     @GetMapping(value = "/api/v1/pictures/test/{fileOriginName}")
     public ResponseEntity<Resource> getImageByName(@PathVariable("fileOriginName") String fileName) {
         Pictures pictures = picturesService.findByOriginalFileName(fileName);
-        String storedFolderPath = pictures.getStoredFolderPath();
+        String storedFolderPath = pictures.getSavedFileName();
         logger.debug(fileName);
         logger.debug(storedFolderPath);
         logger.info("fileName: "+fileName);
@@ -140,7 +140,8 @@ public class PicturesApiController {
     public ResponseEntity<Resource> getThumnailByBoardId(@PathVariable Long boardId){
         List<PicturesResponseDto> pictures = picturesService.findByBoardId(boardId);
         // TODO 섬네일 미적용 상태
-        String storedFolderPath = pictures.get(0).getStoredFolderPath();
+        String storedFolderPath = pictures.get(0).getSaltedFileName();
+        System.out.println("Thumbnail " + storedFolderPath);
         try{
             FileSystemResource resource = new FileSystemResource(storedFolderPath);
             if (!resource.exists()) {
