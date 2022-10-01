@@ -27,7 +27,7 @@ public class FavoritesApiController {
     public Long save(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody FavoritesSaveRequestDto requestDto)
     {
         System.out.println("userDetails Like: " + userDetails);
-        User user = userService.findById(requestDto.getUserId()).toEntity();
+        User user = userService.findById(userDetails.getId()).toEntity();
         Posts posts = postsService.findById(requestDto.getPostId()).toEntity();
         if (user == null || posts == null) {
             System.out.println("is NULL user: " + user + " posts: " + posts);
@@ -41,10 +41,20 @@ public class FavoritesApiController {
         return favoritesService.save(user, posts);
     }
 
-    @DeleteMapping("/api/v1/favorites/{id}")
-    public Long delete(@PathVariable Long id) {
-        postsService.delete(id);
-        return id;
+    @GetMapping("/api/v1/favorites/{postId}")
+    public Boolean get(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable Long postId)
+    {
+        System.out.println("userDetails Get Like: " + userDetails);
+        User user = userService.findById(userDetails.getId()).toEntity();
+        Posts posts = postsService.findById(postId).toEntity();
+        return favoritesService.findByUserIdAndPostId(user, posts).isPresent();
+    }
+
+    @DeleteMapping("/api/v1/favorites/{postId}")
+    public void delete(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable Long postId) {
+        User user = userService.findById(userDetails.getId()).toEntity();
+        Posts posts = postsService.findById(postId).toEntity();
+        favoritesService.delete(user, posts);
     }
 
     @GetMapping("/api/v1/favorites/list")

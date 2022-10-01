@@ -1,6 +1,6 @@
 package com.jpmarket.web.chatroomDto.messagesDto;
 
-import com.jpmarket.domain.chatroom.messages.Messages;
+import com.jpmarket.domain.chatroom.message.Message;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,11 +22,8 @@ public class MessageRequestDto {
         this.message = message;
     }
 
-    public Messages toEntity(Long roomId, String sender, String content) {
-        return Messages.builder()
-                .roomId(roomId)
-                .sender(sender)
-                .content(content)
+    public Message toEntity(Long roomId, String sender, String content) {
+        return Message.builder()
                 .build();
     }
 }

@@ -129,11 +129,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/**/*.js")
                 .permitAll()
                 .antMatchers(HttpMethod.GET, "/api/v1/posts/**").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/v1/pictures/**", "/api/v1/favorites/list").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/v1/pictures/**", "/api/v1/favorites/list", "/api/v1/favorites/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/comments/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/auth/user", "/auth/registrationConfirm").permitAll()
                 .antMatchers(HttpMethod.POST, "/auth/signup", "/auth/authenticate", "/api/v1/favorites").permitAll()
                 .antMatchers(HttpMethod.POST, "/api/v1/posts/save", "/api/v1/pictures/upload").permitAll()
+                .antMatchers(HttpMethod.DELETE, "/api/v1/favorites/**").permitAll()
                 .antMatchers("/", "/error",
                         "/auth/authenticate", "/auth/signup", "/oauth2/authorize/**", "/h2-console/**",
                         "/v2/**", "/swagger-ui.html", "/swagger-resources/**")
