@@ -1,52 +1,57 @@
 package com.jpmarket.web;
 
-import com.jpmarket.domain.chatroom.message.Message;
+import com.jpmarket.domain.chat.Message;
 import com.jpmarket.service.ChatRoomService;
+import com.jpmarket.service.MessageService;
+import com.jpmarket.web.chatDto.ChatNotification;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.codec.ServerSentEvent;
+import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
-import java.util.List;
 @Controller
-@RestController
-@RequestMapping("/sse-server")
-@CrossOrigin(origins = "*", allowedHeaders = "*", allowCredentials = "true")
 public class ChatRoomApiController {
 
     @Autowired
+    private SimpMessagingTemplate messagingTemplate;
+    @Autowired
+    private MessageService messageService;
+    @Autowired
     private ChatRoomService chatRoomService;
 
-//    @PostMapping("/user")
-//    public String addUser(@RequestParam("name") String name) {
-//        chatRoomService.addUser(0L, name);
-//        return "User" + name + " added !";
-//    }
+    @MessageMapping("/chat")
+    public void processMessage(@Payload Message message) {
+        Long chatId = chatRoomService.getChatId(message.getSenderId(), message.getReceiverId(), true);
+        message.setChatId(chatId);
 
-//    @PostMapping("/user/messages")
-//    public String sendUserMessage(@RequestBody Message messages) {
-//        chatRoomService.sendUserMessage(messages);
-//        return "Message sent from " + messages.getSender() + " to " + messages.getSender();
-//    }
+        Message saved = messageService.save(message);
+        messagingTemplate.convertAndSendToUser(
+                message.getReceiverId().toString(), "/queue/messages",
+                ChatNotification.builder()
+                        .id(saved.getId())
+                        .senderId(saved.getSenderId())
+                        .senderName(saved.getSenderName())
+                        .build());
+    }
 
+    @GetMapping("/messages/{senderId}/{receiverId}/count")
+    public ResponseEntity<Long> countNewMessages(@PathVariable Long senderId, @PathVariable Long receiverId){
+        System.out.println("countNewMessages senderId: " + senderId + " receiverId: " + receiverId);
+        return ResponseEntity.ok(messageService.countNewMessage(senderId, receiverId));
+    }
 
-//
-//    @GetMapping("/user")
-//    public Flux<ServerSentEvent<List<String>>> streamUsers(@RequestParam("name") String name) {
-//        return chatRoomService.getUsers(name);
-//    }
-//
-//    @GetMapping("/user/messages")
-//    public Flux<ServerSentEvent<Message>> streamLastMessages(@RequestParam("name") String name) {
-//        return chatRoomService.getLastUserMessage(name);
-//    }
-//
-//    @GetMapping("/user/messages/all")
-//    public Flux<ServerSentEvent<List<Message>>> streamMessages(@RequestParam("name") String name) {
-//        return chatRoomService.getAllUserMessages(name);
-//    }
-//
+    @GetMapping("/messages/{senderId}/{receiverId}")
+    public ResponseEntity<?> findChatMessages(@PathVariable Long senderId, @PathVariable Long receiverId) {
+        System.out.println("findChatMessages senderId: " + senderId + " receiverId: " + receiverId);
+        return ResponseEntity.ok(messageService.findChatMessages(senderId, receiverId));
+    }
 
-
-
+    @GetMapping("/messages/{id}")
+    public ResponseEntity<?> findMessage(@PathVariable Long id) {
+        return ResponseEntity.ok(messageService.findById(id));
+    }
 }

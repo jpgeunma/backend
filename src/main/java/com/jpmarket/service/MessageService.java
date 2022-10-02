@@ -1,79 +1,61 @@
 package com.jpmarket.service;
 
 
-import com.jpmarket.domain.chatroom.message.Message;
-import com.jpmarket.domain.chatroom.message.MessageRepository;
-import com.jpmarket.web.messageDto.MessageDto;
+import com.jpmarket.domain.chat.ChatRoomRepository;
+import com.jpmarket.domain.chat.Message;
+import com.jpmarket.domain.chat.MessageRepository;
+import com.jpmarket.domain.chat.MessageStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.ResourceClosedException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class MessageService {
 
-    private final MessageRepository messagesRepository;
+    @Autowired
+    private MessageRepository messageRepository;
+    @Autowired
+    private ChatRoomRepository chatRoomRepository;
 
-//    @Transactional
-//    public Message send(MessageDto messageDto){
-//        log.info("Message Service's Service Layer:: Call send Method");
-//
-//        Message messages = Message.builder()
-//                .sender(messageDto.getSender())
-//                .receiver(messageDto.getReceiver())
-//                .content(messageDto.getContent())
-//                .build();
-//
-//        return messagesRepository.save(messages);
-//    }
-//
-//    @Transactional
-//    public List<MessageDto> getUserList(String sender) {
-//        log.info("Message Service's Service Layer :: Call getUserList Method!");
-//
-//        List<Message> messagesList = messagesRepository.findAllBySender(sender);
-//        List<MessageDto> messages = new ArrayList<>();
-//
-//        messagesList.forEach(message -> {
-//            messages.add(MessageDto.builder()
-//                    .sender(String.valueOf(message.getSender()))
-//                    .receiver(String.valueOf(message.getReceiver()))
-//                    .build());
-//        });
-//        return messages;
-//    }
-//
-//    @Transactional
-//    public List<MessageDto> getMessageList(String sender, String receiver) {
-//        log.info("Message Service's Service Layer :: Call getMessageList Method!");
-//
-//        List<Message> messagesList = messagesRepository.findAllBySenderAndReceiver(sender, receiver);
-//
-//        List<MessageDto> messageDtos = new ArrayList<>();
-//
-//        messagesList.forEach(message -> {
-//            messageDtos.add(MessageDto.builder()
-//                    .id(message.getId())
-//                    .sender(message.getSender())
-//                    .receiver(message.getReceiver())
-//                    .content(message.getContent())
-//                    .build());
-//        });
-//
-//        return messageDtos;
-//    }
-//
-//    @Transactional
-//    public String delete(String sender, String reciever){
-//        log.info("Message Service's Service Layer :: Call delete Method!");
-//
-//        messagesRepository.deleteBySenderAndReceiver(sender, reciever);
-//
-//        return "Successfully Delete messages";
-//    }
+    public Message save(Message message) {
+        message.setStatus(MessageStatus.RECEIVED);
+        messageRepository.save(message);
+        return message;
+    }
+
+    public Long countNewMessage(Long senderId, Long receiverId) {
+        return messageRepository.countBySenderIdAndReceiverIdAndStatus(
+                senderId, receiverId, MessageStatus.RECEIVED);
+    }
+
+    public List<Message> findChatMessages(Long senderId, Long receiverId) {
+        Long chatId = chatRoomRepository.findBySenderIdAndReceiverId(senderId, receiverId).getChatId();
+
+        List<Message> messages = messageRepository.findByChatId(chatId);
+
+        if(messages.size() > 0) {
+            updateStatuses(senderId, receiverId, MessageStatus.DELIVERED);
+        }
+
+        return messages;
+    }
+
+    public Message findById(Long id) {
+        return messageRepository.findById(id).map(message -> {
+            message.setStatus(MessageStatus.DELIVERED);
+            return messageRepository.save(message);
+        }).orElseThrow(() -> new ResourceClosedException("can't find message (" + id + ")"));
+    }
+    public void updateStatuses(Long senderId, Long receiverId, MessageStatus status) {
+        List<Message> messages = messageRepository.findAllBySenderIdAndReceiverId(senderId, receiverId);
+        messages.stream().peek(message -> message.setStatus(status));
+        messageRepository.saveAll(messages);
+    }
 }

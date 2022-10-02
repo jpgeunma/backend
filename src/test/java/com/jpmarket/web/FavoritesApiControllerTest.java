@@ -118,7 +118,7 @@ public class FavoritesApiControllerTest {
         List<User> allUser = userRepository.findAll();
         List<Favorites> allFavorites = favoritesRepository.findAll();
 
-        assertThat(allFavorites.get(0).getUserId()).isEqualTo(userId);
-        assertThat(allFavorites.get(0).getPostId()).isEqualTo(postId);
+        assertThat(allFavorites.get(0).getUser().getId()).isEqualTo(userId);
+        assertThat(allFavorites.get(0).getUser().getId()).isEqualTo(postId);
     }
 }
