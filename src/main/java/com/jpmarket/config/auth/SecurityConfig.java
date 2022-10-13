@@ -21,6 +21,11 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
 
 @RequiredArgsConstructor
 @EnableWebSecurity
@@ -77,6 +82,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public CorsFilter simpleCorsFilter() {
         return new CorsFilter();
     }
+
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 //        http.csrf().disable().headers().frameOptions().disable().and()
@@ -130,7 +137,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .permitAll()
                 .antMatchers(HttpMethod.GET, "/api/v1/posts/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/v1/pictures/**", "/api/v1/favorites/list", "/api/v1/favorites/**").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/comments/**", "/ws/info", "/messages/{senderId}/{receiverId}", "/messages/{senderId}/{receiverId}/count", "/messages/{id}").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/comments/**", "/chat",  "/messages/{senderId}/{receiverId}", "/messages/{senderId}/{receiverId}/count", "/messages/{id}", "/messages/**").permitAll()
+                .antMatchers("/ws/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/auth/user", "/auth/registrationConfirm").permitAll()
                 .antMatchers(HttpMethod.POST, "/auth/signup", "/auth/authenticate", "/api/v1/favorites").permitAll()
                 .antMatchers(HttpMethod.POST, "/api/v1/posts/save", "/api/v1/pictures/upload").permitAll()

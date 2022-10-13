@@ -4,6 +4,8 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 public class CorsFilter implements Filter {
 
@@ -14,7 +16,16 @@ public class CorsFilter implements Filter {
         System.out.println("Filter res " + res);
         System.out.println("Filter req " + req);
 
-        res.setHeader("Access-Control-Allow-Origin", "*");
+        // TODO for chatting test ==============
+        String origin = req.getHeader("Origin");
+        List<String> allowedOrigins = Arrays.asList("http://localhost:3000");
+        res.setHeader("Access-Control-Allow-Origin", allowedOrigins.contains(origin) ? origin : "");
+        res.setHeader("Vary", "Origin");
+        // ============================
+        //res.setHeader("Access-Control-Allow-Origin", "*");
+        // This is Origin
+        //============================
+
         res.setHeader("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT, OPTIONS");
         res.setHeader("Access-Control-Expose-Headers", "Authorization, X-Total-Count, Link");
         res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept," +
