@@ -12,7 +12,7 @@ public class GetCurrentUserDto {
     private String email;
 
     @Builder
-    GetCurrentUserDto(String name, String email){
+    GetCurrentUserDto(Long id, String name, String email){
         this.name = name;
         this.email = email;
     }

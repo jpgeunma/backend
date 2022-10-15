@@ -1,17 +1,16 @@
 package com.jpmarket.service;
 
 
-import com.jpmarket.domain.chat.ChatRoomRepository;
-import com.jpmarket.domain.chat.Message;
-import com.jpmarket.domain.chat.MessageRepository;
-import com.jpmarket.domain.chat.MessageStatus;
+import com.jpmarket.domain.chat.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.ResourceClosedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,8 +35,11 @@ public class MessageService {
     }
 
     public List<Message> findChatMessages(Long senderId, Long receiverId) {
-        Long chatId = chatRoomRepository.findBySenderIdAndReceiverId(senderId, receiverId).getChatId();
+        Optional<ChatRoom> chatRoom = chatRoomRepository.findBySenderIdAndReceiverId(senderId, receiverId);
+        if(!chatRoom.isPresent())
+            return new ArrayList<>();
 
+        Long chatId = chatRoom.get().getId();
         List<Message> messages = messageRepository.findByChatId(chatId);
 
         if(messages.size() > 0) {

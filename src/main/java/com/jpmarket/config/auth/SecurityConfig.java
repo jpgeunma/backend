@@ -140,6 +140,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/api/comments/**", "/chat",  "/messages/{senderId}/{receiverId}", "/messages/{senderId}/{receiverId}/count", "/messages/{id}", "/messages/**").permitAll()
                 .antMatchers("/ws/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/auth/user", "/auth/registrationConfirm").permitAll()
+                .antMatchers(HttpMethod.GET, "/auth/user/summaries").permitAll()
                 .antMatchers(HttpMethod.POST, "/auth/signup", "/auth/authenticate", "/api/v1/favorites").permitAll()
                 .antMatchers(HttpMethod.POST, "/api/v1/posts/save", "/api/v1/pictures/upload").permitAll()
                 .antMatchers(HttpMethod.DELETE, "/api/v1/favorites/**").permitAll()

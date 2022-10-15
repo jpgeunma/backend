@@ -28,9 +28,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.UUID;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -85,6 +83,17 @@ public class AuthController {
                 .email(user.getEmail())
                 .build();
     }
+
+    @GetMapping("/user/summaries")
+    public ResponseEntity<?> getUserSummaries(@LoginUser CustomUserDetails CustomUserDetails) {
+        logger.debug("REST request to get user summaries : {}", CustomUserDetails.getEmail());
+        UserResponseDto user = userService.findById(1L);
+        UserResponseDto user1 = userService.findById(2L);
+        UserResponseDto user2 = userService.findById(3L);
+        List<UserResponseDto> list = Arrays.asList(user, user1, user2);
+        return ResponseEntity.ok(list);
+    }
+
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequestDto signUpRequestDto) {
         logger.debug("REST request to signup : {}", signUpRequestDto.getEmail());
