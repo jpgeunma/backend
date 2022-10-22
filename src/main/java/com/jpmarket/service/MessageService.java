@@ -34,8 +34,10 @@ public class MessageService {
                 senderId, receiverId, MessageStatus.RECEIVED);
     }
 
-    public List<Message> findChatMessages(Long senderId, Long receiverId) {
-        Optional<ChatRoom> chatRoom = chatRoomRepository.findBySenderIdAndReceiverId(senderId, receiverId);
+    public List<Message> findChatMessages(Long userId, Long postId) {
+        Optional<ChatRoom> chatRoom = chatRoomRepository.findByBuyerIdAndPostId(userId, postId);
+        if(!chatRoom.isPresent())
+            chatRoom = chatRoomRepository.findBySellerIdAndPostId(userId, postId);
         if(!chatRoom.isPresent())
             return new ArrayList<>();
 
@@ -43,7 +45,7 @@ public class MessageService {
         List<Message> messages = messageRepository.findByChatId(chatId);
 
         if(messages.size() > 0) {
-            updateStatuses(senderId, receiverId, MessageStatus.DELIVERED);
+            updateStatuses(userId, postId, MessageStatus.DELIVERED);
         }
 
         return messages;

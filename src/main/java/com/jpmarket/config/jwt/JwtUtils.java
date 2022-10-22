@@ -3,8 +3,6 @@ package com.jpmarket.config.jwt;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.jpmarket.config.auth.dto.CustomUserDetails;
-import com.jpmarket.domain.user.User;
-import com.jpmarket.domain.user.UserRepository;
 import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +12,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
@@ -28,9 +28,6 @@ public class JwtUtils implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
     private static final String AUTHORITIES_KEY = "authorities";
 
-    @Autowired
-    UserRepository userRepository;
-
     @Value("${jpmarget.app.jwtSecret}")
     private String jwtScret;
 
@@ -40,14 +37,15 @@ public class JwtUtils implements Serializable {
     @Value("${jpmarget.app.jwtExpirationMs}")
     private int jwtExpirationMs;
 
-    public String generateJwtToken(User user) {
-
-        return JWT.create()
-                .withSubject(user.getEmail())
-                .withExpiresAt(new Date(System.currentTimeMillis()+ jwtExpirationMs))
-                .withClaim("name", user.getName())
-                .sign(Algorithm.HMAC512(jwtScret));
-    }
+    // Unused
+//    public String generateJwtToken(User user) {
+//
+//        return JWT.create()
+//                .withSubject(user.getEmail())
+//                .withExpiresAt(new Date(System.currentTimeMillis()+ jwtExpirationMs))
+//                .withClaim("name", user.getName())
+//                .sign(Algorithm.HMAC512(jwtScret));
+//    }
     public String generateJwtToken(Authentication authentication) {
         return generateJwtToken(authentication, false);
     }
@@ -67,13 +65,6 @@ public class JwtUtils implements Serializable {
     }
 
     CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-//        return JWT.create()
-//                .withSubject(Long.toString(customUserDetails.getId()))
-//                .withSubject(customUserDetails.getEmail())
-//                .withIssuedAt(new Date())
-//                .withExpiresAt(validity)
-//                .withClaim(AUTHORITIES_KEY, authorities)
-//                .sign(Algorithm.HMAC512(jwtKey));
         return Jwts.builder()
                 .setId(customUserDetails.getId().toString())
                 .setSubject(customUserDetails.getEmail())
@@ -83,7 +74,20 @@ public class JwtUtils implements Serializable {
                 .setExpiration(validity)
                 .compact();
     }
+
+    public String generateRefreshToken(String userEmail) {
+        return Jwts.builder().setSubject(userEmail).setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs * 1000))
+                .signWith(SignatureAlgorithm.HS512, jwtScret).compact();
+    }
+
     public String getUserNameFromJwtToken(String token) {
+        System.out.println("JWT token UserName: " + Jwts.parserBuilder().setSigningKey(jwtKey).build().parseClaimsJws(token).getBody().getSubject());
+        return  Jwts.parserBuilder().setSigningKey(jwtKey).build().parseClaimsJwt(token).getBody().getSubject();
+    }
+
+    public String getPasswordFromJwtToken(String token) {
+        System.out.println("JWT token Password: " + Jwts.parserBuilder().setSigningKey(jwtKey).build().parseClaimsJws(token).getBody().getSubject());
         return  Jwts.parserBuilder().setSigningKey(jwtKey).build().parseClaimsJwt(token).getBody().getSubject();
     }
 
@@ -99,9 +103,15 @@ public class JwtUtils implements Serializable {
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
 
-        User principal = userRepository.findByEmail(authorities.toString()).orElse(null);
+        UserDetails userDetails = User.builder()
+                .username(getUserNameFromJwtToken(token))
+                .authorities(authorities)
+                .password(getPasswordFromJwtToken(token))
+                .build();
 
-        return new UsernamePasswordAuthenticationToken(principal, token, authorities);
+        // User principal = userRepository.findByEmail(authorities.toString()).orElse(null);
+
+        return new UsernamePasswordAuthenticationToken(userDetails, token, authorities);
     }
 
     public String getUserEmailFromJwtToken(String token) {

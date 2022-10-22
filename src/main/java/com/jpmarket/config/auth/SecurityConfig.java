@@ -105,9 +105,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //
 //        //TODO 시큐리티 체크. 포스팅시 오류 떠서 적음. 무슨 뜻인지 모름
 //        //TODO 출시 때 csrf 적용 필요
-//        http.cors().configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues());
-//
-//        http.addFilterBefore(new AuthTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+        /*
+        1.GET, HEAD, POST 만 사용 가능하다.
+        2.POST의 경우에는 다음과 같은 조건이 경우에만 사용가능하다.
+            1) content-type이 application/x-www.form-urlencoded, multipart/form-data, text/plain의 경우에만 사용 가능하다.
+            2) customer Header가 설정이 된 경우에는 사용 불가하다. (X-Modified etc...)
+            ->내 경우 header에 token을 넣었더니 CORS가 걸렸다.
+        3.Server에서 Access-Control-Allow-Origin 안에 허용여부를 결정해줘야지 된다.
+
+        큰 제약사항은 위 3가지지만, 세부적으로는 preflight 문제가 발생하게 된다.
+        preflight란, POST로 외부 site를 call 할때, OPTIONS method를 이용해서
+        URL에 접근이 가능한지를 다시 한번 확인하는 절차를 거치게 된다. 이때,
+         주의할 점이 WWW에서 제약한 사항은 분명히 content-type이 application/xml,
+         text/xml의 경우에만 preflight가 발생한다고 되어있으나, firefox나 chrome의
+         경우에는 text/plain, application/x-www-form-urlencoded,
+         multipart/form-data 모두에서 prefligh가 발생하게 된다.
+         */
 
         http.cors()
                 .and()
@@ -144,6 +157,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/auth/signup", "/auth/authenticate", "/api/v1/favorites").permitAll()
                 .antMatchers(HttpMethod.POST, "/api/v1/posts/save", "/api/v1/pictures/upload").permitAll()
                 .antMatchers(HttpMethod.DELETE, "/api/v1/favorites/**").permitAll()
+                .antMatchers("/webs/**", "/user/**").permitAll()
                 .antMatchers("/", "/error",
                         "/auth/authenticate", "/auth/signup", "/oauth2/authorize/**", "/h2-console/**",
                         "/v2/**", "/swagger-ui.html", "/swagger-resources/**")

@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,6 +27,9 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     @Autowired
     private JwtUtils jwtUtils;
 
+    // TODO 서비스 시작 할 때 추가
+    @Autowired
+    RedisTemplate<String, Object> redisTemplate;
     @Autowired
     private CustomUserDetailsService userDetailsService;
 
@@ -35,12 +39,14 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try{
             String jwt = getJwtFromRequest(request);
+            String userEmail;
+            UserDetails user;
             logger.debug("request from Jwt Token {}", jwt);
             if ( StringUtils.hasText(jwt) && jwtUtils.validateJwtToken(jwt)) {
-                String userEmail = jwtUtils.getUserEmailFromJwtToken(jwt);
-                UserDetails user = (UserDetails)userDetailsService.loadUserByUsername(userEmail);
-
+                userEmail = jwtUtils.getUserEmailFromJwtToken(jwt);
+                user = (UserDetails)userDetailsService.loadUserByUsername(userEmail);
                 logger.debug("User name from Jwt Token {}", userEmail);
+
                 UsernamePasswordAuthenticationToken auth = (UsernamePasswordAuthenticationToken) getAuthorities(user);
                 auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(auth);
@@ -50,7 +56,10 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             logger.error("Could not set user authentication in security context", e);
         }
         System.out.println("filterChain.doFilter");
+
+        // 전처리
         filterChain.doFilter(request, response);
+        // 후처리
     }
 
     private String getJwtFromRequest(HttpServletRequest request) {
@@ -64,4 +73,5 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     public Authentication getAuthorities(UserDetails user) {
         return new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
     }
+
 }

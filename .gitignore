@@ -1,5 +1,6 @@
 application-oauth.properties
 application-jwt.properties
+application-db.properties
 application-mail.properties
 /src/main/resources/testImages
 application.yml

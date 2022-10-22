@@ -5,9 +5,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 
+import java.io.Serializable;
+
 @AllArgsConstructor
 @Data
-public class JwtToken {
+public class JwtToken implements Serializable {
 
     private String accessTotken;
 
@@ -20,4 +22,7 @@ public class JwtToken {
     private String scope;
 
     private int refreshTokenExpiresIn;
+
+    private static final long serialVersionUID = -7353484588260422449L;
+
 }

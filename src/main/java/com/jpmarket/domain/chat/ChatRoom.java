@@ -21,7 +21,9 @@ public class ChatRoom extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long senderId;
+    private Long sellerId;
 
-    private Long receiverId;
+    private Long buyerId;
+
+    private Long postId;
 }
